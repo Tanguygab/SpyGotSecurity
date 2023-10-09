@@ -2,4 +2,13 @@ name: SpyGotSecurity
 version: '${version}'
 main: io.github.tanguygab.spygotsecurity.SpyGotSecurity
 api-version: '1.20'
+description: "Want to let your players protect their bases? Here's the plugin for you!"
+author: Tanguygab
+softdepend: [PlaceholderAPI]
 
+database: false # planned
+
+commands:
+  spygotsecurity:
+    aliases: sgs
+    permission: spygotsecurity.admin

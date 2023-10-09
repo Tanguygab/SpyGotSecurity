@@ -11,9 +11,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
-public class GetCommand extends SGSCommand {
+public class ListCommand extends SGSCommand {
 
-    public GetCommand(SpyGotSecurity plugin) {
+    public ListCommand(SpyGotSecurity plugin) {
         super(plugin);
     }
 
@@ -22,21 +22,7 @@ public class GetCommand extends SGSCommand {
         String item = args.length > 0 ? args[0] : "";
         switch (item) {
             case "keypad" -> {
-                if (!(sender instanceof Player player)) {
-                    send(sender,"&cYou must be a player!");
-                    return;
-                }
-
-                ItemStack keypad = new ItemStack(Material.IRON_BLOCK);
-                ItemMeta meta = keypad.getItemMeta();
-                assert meta != null;
-                meta.setDisplayName(color("&8&lKeyPad"));
-                meta.setLore(color("","&8Place and right-click me","&8to set a password!"));
-                meta.getPersistentDataContainer().set(NamespacedKeys.KEYPAD, PersistentDataType.BOOLEAN,true);
-                keypad.setItemMeta(meta);
-
-                player.getInventory().addItem(keypad);
-                send(sender,"&aWoaw, a keypad!");
+                send(sender,"&8Keypads&7: &f"+plugin.getBlockManager().getKeypads().size());
             }
             case "idk" -> {}
         }
