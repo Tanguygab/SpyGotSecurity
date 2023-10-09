@@ -1,0 +1,5 @@
+name: SpyGotSecurity
+version: '${version}'
+main: io.github.tanguygab.spygotsecurity.SpyGotSecurity
+api-version: '1.20'
+
