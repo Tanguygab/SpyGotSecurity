@@ -4,6 +4,7 @@ import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
@@ -16,7 +17,7 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onInvClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player p) || !openedMenus.containsKey(p)) return;
+        if (!(e.getWhoClicked() instanceof Player p) || !openedMenus.containsKey(p) || e.getClick() == ClickType.DOUBLE_CLICK) return;
         openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot(),e.getClick());
         e.setCancelled(true);
     }
