@@ -3,15 +3,14 @@ package io.github.tanguygab.spygotsecurity.blocks;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
-import io.github.tanguygab.spygotsecurity.menus.locked.PasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
+import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-import static io.github.tanguygab.spygotsecurity.utils.Utils.*;
 
 @Setter
 @Getter
@@ -30,7 +29,7 @@ public abstract class LockedBlock extends SGSBlock {
 
     public void onClick(Player player) {
         if (!isOwner(player) && password == null) {
-            send(player,"&cThis keypad hasn't been configured yet!");
+            Utils.send(player,"&cThis keypad hasn't been configured yet!");
             return;
         }
         openMenu(player, password == null ? new SetPasscodeMenu(this,player) : new CheckPasscodeMenu(this,player));

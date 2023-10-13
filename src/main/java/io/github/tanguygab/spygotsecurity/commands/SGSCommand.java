@@ -1,8 +1,8 @@
 package io.github.tanguygab.spygotsecurity.commands;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
+import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.AllArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public abstract class SGSCommand {
     protected final SpyGotSecurity plugin;
 
     protected String color(String string) {
-        return ChatColor.translateAlternateColorCodes('&',string);
+        return Utils.color(string);
     }
     protected List<String> color(String... array) {
         List<String> lore = new ArrayList<>();

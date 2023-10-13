@@ -1,13 +1,7 @@
 package io.github.tanguygab.spygotsecurity.commands;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.utils.NamespacedKeys;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
