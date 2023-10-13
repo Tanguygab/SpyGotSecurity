@@ -4,15 +4,21 @@ import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
+import io.github.tanguygab.spygotsecurity.utils.PasswordUtils;
 import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.Getter;
-import lombok.Setter;
+import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
-@Setter
 @Getter
 public abstract class LockedBlock extends SGSBlock {
 
@@ -32,11 +38,48 @@ public abstract class LockedBlock extends SGSBlock {
             Utils.send(player,"&cThis keypad hasn't been configured yet!");
             return;
         }
+        if (plugin().getBlockManager().usePasswords()) {
+            if (password == null) {
+                byte[] salt = PasswordUtils.newSalt();
+                openAnvilGUI(player, "Set your password", salt, password -> onPasswordSet(player, password, salt));
+                return;
+            }
+            openAnvilGUI(player,"Enter your password",salt, password -> onPasswordCheck(player,password));
+            return;
+        }
         openMenu(player, password == null ? new SetPasscodeMenu(this,player) : new CheckPasscodeMenu(this,player));
+    }
+
+    public void onPasswordSet(Player player, byte[] password, byte[] salt) {
+        this.password = password;
+        this.salt = salt;
+        Utils.send(player,"New passcode set!");
+    }
+    public void onPasswordCheck(Player player, byte[] password) {
+        if (Arrays.equals(password,this.password)) {
+            onSuccess(player);
+            Utils.send(player,"&aCorrect passcode!");
+            return;
+        }
+        Utils.send(player,"&cWrong passcode!");
     }
 
     public void openMenu(Player player, SGSMenu menu) {
         plugin().getInventoryListener().open(player, menu);
+    }
+
+    private void openAnvilGUI(Player player, String title, byte[] salt, Consumer<byte[]> onClick) {
+        new AnvilGUI.Builder()
+                .plugin(plugin())
+                .title(title)
+                .text("Your Password")
+                .itemLeft(new ItemStack(Material.PAPER))
+                .onClickAsync((slot, gui) -> CompletableFuture.supplyAsync(() -> {
+                    PasswordUtils.asyncHash(gui.getText(), salt, onClick);
+                    return List.of(AnvilGUI.ResponseAction.close());
+                }))
+                .open(player);
+
     }
 
     protected SpyGotSecurity plugin() {

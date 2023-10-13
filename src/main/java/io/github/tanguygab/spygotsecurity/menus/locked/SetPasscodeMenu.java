@@ -2,7 +2,6 @@ package io.github.tanguygab.spygotsecurity.menus.locked;
 
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.utils.PasswordUtils;
-import io.github.tanguygab.spygotsecurity.utils.Utils;
 import org.bukkit.entity.Player;
 
 public class SetPasscodeMenu extends PasscodeMenu {
@@ -18,8 +17,6 @@ public class SetPasscodeMenu extends PasscodeMenu {
 
     @Override
     protected void onClick(byte[] password, byte[] salt) {
-        block.setPassword(password);
-        block.setSalt(salt);
-        Utils.send(player,"New passcode set!");
+        block.onPasswordSet(player,password,salt);
     }
 }

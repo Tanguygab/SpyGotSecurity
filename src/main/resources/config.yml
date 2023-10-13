@@ -1,4 +1,4 @@
-password-protected-blocks:
+locked-blocks:
   method: PASSCODE # PASSCODE or PASSWORD
 
 codebreaker:
