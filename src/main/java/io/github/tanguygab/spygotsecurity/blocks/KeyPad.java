@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class KeyPad extends LockedBlock {
 
-    public KeyPad(Block block, UUID owner) {
-        this(block, owner, null, null);
+    public KeyPad(Block block, Player owner) {
+        this(block, owner.getUniqueId(), null, null);
     }
 
     public KeyPad(Block block, UUID owner, byte[] password, byte[] salt) {

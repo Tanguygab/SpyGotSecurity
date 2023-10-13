@@ -1,7 +1,9 @@
 package io.github.tanguygab.spygotsecurity;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.serialization.standard.StandardSerializer;
 import io.github.tanguygab.spygotsecurity.commands.*;
+import io.github.tanguygab.spygotsecurity.database.DataManager;
 import io.github.tanguygab.spygotsecurity.features.BlockManager;
 import io.github.tanguygab.spygotsecurity.listeners.*;
 import lombok.Getter;
@@ -26,6 +28,7 @@ public final class SpyGotSecurity extends JavaPlugin {
 
     @Getter private YamlDocument configuration;
     @Getter private BlockManager blockManager;
+    @Getter private DataManager dataManager;
     @Getter private InventoryListener inventoryListener;
 
     @Override
@@ -36,8 +39,8 @@ public final class SpyGotSecurity extends JavaPlugin {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         blockManager = new BlockManager(this);
+        (dataManager = new DataManager(this)).load();
 
         PluginManager plm = getServer().getPluginManager();
         plm.registerEvents(inventoryListener = new InventoryListener(),this);
@@ -50,6 +53,7 @@ public final class SpyGotSecurity extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
+        dataManager.unload();
     }
 
     @Override

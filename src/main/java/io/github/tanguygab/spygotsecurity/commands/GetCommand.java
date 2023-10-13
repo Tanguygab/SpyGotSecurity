@@ -1,7 +1,7 @@
 package io.github.tanguygab.spygotsecurity.commands;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.utils.NamespacedKeys;
+import io.github.tanguygab.spygotsecurity.features.BlockManager;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ public class GetCommand extends SGSCommand {
                 assert meta != null;
                 meta.setDisplayName(color("&8&lKeypad"));
                 meta.setLore(color("","&8Place and right-click me","&8to set a password!"));
-                meta.getPersistentDataContainer().set(NamespacedKeys.KEYPAD, PersistentDataType.BOOLEAN,true);
+                meta.getPersistentDataContainer().set(BlockManager.LOCKED_BLOCK, PersistentDataType.STRING,"keypad");
                 keypad.setItemMeta(meta);
 
                 player.getInventory().addItem(keypad);

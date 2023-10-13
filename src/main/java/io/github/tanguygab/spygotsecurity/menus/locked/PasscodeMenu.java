@@ -26,7 +26,7 @@ public abstract class PasscodeMenu extends SGSMenu {
     public void onOpen() {
         inv.setItem(42,getItem(Material.LIME_WOOL,"Confirm"));
         updateNametag();
-        inv.setItem(15,getHead("dcec807dcc1436334fd4dc9ab349342f6c52c9e7b2bf346712db72a0d6d7a4","Backspace"));
+        inv.setItem(15,getHead("a185c97dbb8353de652698d24b64327b793a3f32a98be67b719fbedab35e","Backspace"));
 
         setCodeItem(38,0);
         setCodeItem(28,1);
