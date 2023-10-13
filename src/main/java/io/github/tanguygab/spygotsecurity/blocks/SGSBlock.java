@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public abstract class SGSBlock {
 
-    private final Block block;
+    protected final Block block;
     @Setter private UUID owner;
 
     public boolean isOwner(Player player) {

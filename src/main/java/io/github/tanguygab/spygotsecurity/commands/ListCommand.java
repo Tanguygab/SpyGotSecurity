@@ -22,7 +22,6 @@ public class ListCommand extends SGSCommand {
         String item = args.length > 0 ? args[0] : "";
         switch (item) {
             case "keypad" -> {
-                send(sender,"&8Keypads&7: &f"+plugin.getBlockManager().getKeypads().size());
             }
             case "idk" -> {}
         }

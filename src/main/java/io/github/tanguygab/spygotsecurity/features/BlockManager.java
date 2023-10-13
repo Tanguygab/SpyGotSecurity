@@ -1,35 +1,33 @@
 package io.github.tanguygab.spygotsecurity.features;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
-import lombok.Getter;
+import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class BlockManager {
 
-    @Getter private final Map<Block,KeyPad> keypads = new HashMap<>();
+    private final Map<Block, LockedBlock> lockedBlocks = new HashMap<>();
 
     public BlockManager(SpyGotSecurity plugin) {
 
     }
 
-    public void addKeyPad(Block block, Player player) {
-        keypads.put(block,new KeyPad(block,player.getUniqueId()));
-    }
-    public KeyPad getKeyPad(Block block) {
-        return keypads.get(block);
+    public LockedBlock getLockedBlock(Block block) {
+        return lockedBlocks.get(block);
     }
 
-    public boolean isKeyPad(Block block) {
-        return keypads.containsKey(block);
+    public boolean isLockedBlock(Block block) {
+        return lockedBlocks.containsKey(block);
     }
 
-    public void removeKeyPad(Block block) {
-        keypads.remove(block);
+    public void removedLockedBlock(Block block) {
+        lockedBlocks.remove(block);
     }
 
+    public void addLockedBlock(LockedBlock block) {
+        lockedBlocks.put(block.getBlock(),block);
+    }
 }

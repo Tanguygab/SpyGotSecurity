@@ -1,0 +1,10 @@
+password-protected-blocks:
+  method: PASSCODE # PASSCODE or PASSWORD
+
+codebreaker:
+  enabled: true
+  success-chance: 30
+
+lockpick:
+  enabled: true
+  break-chance: 70

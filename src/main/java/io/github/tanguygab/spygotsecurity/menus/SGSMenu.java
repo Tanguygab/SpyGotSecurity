@@ -17,9 +17,13 @@ public abstract class SGSMenu {
     protected final SpyGotSecurity plugin = SpyGotSecurity.getInstance();
     public Inventory inv;
 
-    public abstract void open();
+    public abstract void onOpen();
     public abstract void onClick(ItemStack item, int slot, ClickType click);
 
+    public void open() {
+        onOpen();
+        player.openInventory(inv);
+    }
     public void close() {
         plugin.getInventoryListener().close(player);
     }

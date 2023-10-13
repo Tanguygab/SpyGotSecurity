@@ -32,7 +32,7 @@ public final class SpyGotSecurity extends JavaPlugin {
         blockManager = new BlockManager(this);
 
         PluginManager plm = getServer().getPluginManager();
-        plm.registerEvents(inventoryListener = new InventoryListener(this),this);
+        plm.registerEvents(inventoryListener = new InventoryListener(),this);
         plm.registerEvents(new BlockListener(this),this);
 
         commands.put("get",new GetCommand(this));
