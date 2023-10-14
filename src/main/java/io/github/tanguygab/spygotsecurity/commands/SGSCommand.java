@@ -16,11 +16,6 @@ public abstract class SGSCommand {
     protected String color(String string) {
         return Utils.color(string);
     }
-    protected List<String> color(String... array) {
-        List<String> lore = new ArrayList<>();
-        for (String line : array) lore.add(color(line));
-        return lore;
-    }
 
     protected void send(CommandSender sender, String message) {
         sender.sendMessage(color(message));

@@ -4,7 +4,10 @@ import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.features.BlockManager;
 import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +16,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
+
+import java.util.Objects;
+
 import static io.github.tanguygab.spygotsecurity.utils.Utils.*;
 
 public class BlockListener implements Listener {
@@ -56,13 +64,43 @@ public class BlockListener implements Listener {
         Block block = e.getBlock();
         if (!bm.getLockedBlocks().containsKey(block)) return;
         Player player = e.getPlayer();
-        if (!bm.getLockedBlocks().get(block).isOwner(player)) {
+        LockedBlock locked = bm.getLockedBlocks().get(block);
+        if (!locked.isOwner(player)) {
             e.setCancelled(true);
             send(player,"&cYou are not the owner of this block!");
             return;
         }
         plugin.getBlockManager().getLockedBlocks().remove(e.getBlock());
+        ItemStack drop = bm.getItem(locked);
+        if (drop == null) return; // Block was changed while plugin was unloaded
+        e.setDropItems(false);
+        BlockStateMeta meta = drop.getItemMeta() instanceof BlockStateMeta bsm ? bsm : null;
+        ShulkerBox box = meta != null && meta.getBlockState() instanceof ShulkerBox sBox ? sBox : null;
+
+        if (block.getState() instanceof Container container) {
+            for (ItemStack item : container.getInventory().getStorageContents()) {
+                if (item == null) continue;
+                if (box != null) {
+                    box.getInventory().addItem(item);
+                    continue;
+                }
+                drop(item, block);
+            }
+        }
+
         send(player,"&cLocked Block deleted!");
+        if (box != null) {
+            if (box.getInventory().isEmpty() && player.getGameMode() == GameMode.CREATIVE)
+                return;
+            meta.setBlockState(box);
+            drop.setItemMeta(meta);
+            drop.setType(block.getType());
+        }
+        drop(drop,block);
+    }
+
+    private void drop(ItemStack item, Block block) {
+        Objects.requireNonNull(block.getLocation().getWorld()).dropItemNaturally(block.getLocation(),item);
     }
 
     @EventHandler(ignoreCancelled = true)
