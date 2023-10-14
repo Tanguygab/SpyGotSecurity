@@ -5,6 +5,7 @@ import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.features.BlockManager;
 import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.ShulkerBox;
@@ -74,6 +75,7 @@ public class BlockListener implements Listener {
         ItemStack drop = bm.getItem(locked);
         if (drop == null) return; // Block was changed while plugin was unloaded
         e.setDropItems(false);
+        if (drop.getType() == Material.SHULKER_BOX) drop.setType(block.getType());
         BlockStateMeta meta = drop.getItemMeta() instanceof BlockStateMeta bsm ? bsm : null;
         ShulkerBox box = meta != null && meta.getBlockState() instanceof ShulkerBox sBox ? sBox : null;
 
@@ -94,7 +96,6 @@ public class BlockListener implements Listener {
                 return;
             meta.setBlockState(box);
             drop.setItemMeta(meta);
-            drop.setType(block.getType());
         }
         drop(drop,block);
     }
