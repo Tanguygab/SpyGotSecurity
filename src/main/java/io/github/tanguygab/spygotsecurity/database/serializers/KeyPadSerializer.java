@@ -26,7 +26,9 @@ public class KeyPadSerializer implements TypeAdapter<KeyPad> {
     @NotNull
     @Override
     public KeyPad deserialize(@NotNull Map<Object, Object> map) {
+        @SuppressWarnings("unchecked")
         Location loc = (Location) StandardSerializer.getDefault().deserialize((Map<Object, Object>) map.get("location"));
+        assert loc != null;
         UUID uuid = UUID.fromString((String) map.get("uuid"));
         byte[] password = (byte[]) map.get("password");
         byte[] salt = (byte[]) map.get("salt");

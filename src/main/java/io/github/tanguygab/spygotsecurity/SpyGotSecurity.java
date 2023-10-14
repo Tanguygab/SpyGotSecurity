@@ -1,7 +1,6 @@
 package io.github.tanguygab.spygotsecurity;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
-import dev.dejvokep.boostedyaml.serialization.standard.StandardSerializer;
 import io.github.tanguygab.spygotsecurity.commands.*;
 import io.github.tanguygab.spygotsecurity.database.DataManager;
 import io.github.tanguygab.spygotsecurity.features.BlockManager;

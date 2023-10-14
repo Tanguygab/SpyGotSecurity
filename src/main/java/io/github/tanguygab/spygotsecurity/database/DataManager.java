@@ -33,12 +33,13 @@ public class DataManager {
     }
 
     public void load() {
-        List<Map<Object, Object>> list = (List<Map<Object, Object>>) data.getList("keypads");
+        @SuppressWarnings("unchecked")
+        List<Map<Object, Object>> list = (List<Map<Object, Object>>) data.getList("locked-blocks");
         list.forEach(keypad->plugin.getBlockManager().addLockedBlock((LockedBlock) StandardSerializer.getDefault().deserialize(keypad)));
     }
 
     public void unload() {
-        data.set("keypads",new ArrayList<>(plugin.getBlockManager().getLockedBlocks().values()));
+        data.set("locked-blocks",new ArrayList<>(plugin.getBlockManager().getLockedBlocks().values()));
         try {
             data.save();
         } catch (IOException e) {

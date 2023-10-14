@@ -5,7 +5,6 @@ import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor

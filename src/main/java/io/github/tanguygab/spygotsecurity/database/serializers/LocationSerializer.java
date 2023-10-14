@@ -1,13 +1,13 @@
 package io.github.tanguygab.spygotsecurity.database.serializers;
 
 import dev.dejvokep.boostedyaml.serialization.standard.TypeAdapter;
-import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LocationSerializer implements TypeAdapter<Location> {
     @NotNull
@@ -17,7 +17,7 @@ public class LocationSerializer implements TypeAdapter<Location> {
         map.put("x",locked.getBlockX());
         map.put("y",locked.getBlockY());
         map.put("z",locked.getBlockZ());
-        map.put("world",locked.getWorld().getName());
+        map.put("world", Objects.requireNonNull(locked.getWorld()).getName());
         return map;
     }
 
