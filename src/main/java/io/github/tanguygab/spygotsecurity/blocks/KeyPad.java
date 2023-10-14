@@ -17,10 +17,8 @@ public class KeyPad extends LockedBlock {
 
     @Override
     public void onSuccess(Player player) {
-        runSync(()->{
-            block.setType(Material.REDSTONE_BLOCK);
-            plugin().getServer().getScheduler().runTaskLater(plugin(),()->block.setType(Material.IRON_BLOCK),20);
-        });
+        block.setType(Material.REDSTONE_BLOCK);
+        plugin().getServer().getScheduler().runTaskLater(plugin(),()->block.setType(Material.IRON_BLOCK),20);
     }
 
 }

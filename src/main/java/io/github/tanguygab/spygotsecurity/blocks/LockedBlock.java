@@ -4,6 +4,7 @@ import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
+import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
 import io.github.tanguygab.spygotsecurity.utils.PasswordUtils;
 import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.Getter;
@@ -54,10 +55,15 @@ public abstract class LockedBlock extends SGSBlock {
         this.password = password;
         this.salt = salt;
         Utils.send(player,"New passcode set!");
+        plugin().getServer().getScheduler().runTask(plugin(),()->{
+            LockedBlock other = plugin().getBlockManager().getLockedBlocks().get(MultiBlockUtils.getSide(block));
+            if (MultiBlockUtils.isMultiBlock(this, other))
+                syncPasswordTo(other);
+        });
     }
     public void onPasswordCheck(Player player, byte[] password) {
         if (Arrays.equals(password,this.password)) {
-            onSuccess(player);
+            plugin().getServer().getScheduler().runTask(plugin(),()->onSuccess(player));
             Utils.send(player,"&aCorrect passcode!");
             return;
         }
@@ -79,14 +85,15 @@ public abstract class LockedBlock extends SGSBlock {
                     return List.of(AnvilGUI.ResponseAction.close());
                 }))
                 .open(player);
-
     }
 
     protected SpyGotSecurity plugin() {
         return SpyGotSecurity.getInstance();
     }
-    protected void runSync(Runnable run) {
-        plugin().getServer().getScheduler().runTask(plugin(),run);
+
+    public void syncPasswordTo(LockedBlock side) {
+        side.password = password;
+        side.salt = salt;
     }
 
 }

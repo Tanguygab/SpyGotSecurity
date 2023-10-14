@@ -5,6 +5,7 @@ import dev.dejvokep.boostedyaml.serialization.standard.StandardSerializer;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
+import io.github.tanguygab.spygotsecurity.blocks.LockedContainer;
 import io.github.tanguygab.spygotsecurity.database.serializers.*;
 import org.bukkit.Location;
 
@@ -24,6 +25,7 @@ public class DataManager {
         try {
             data = YamlDocument.create(new File(plugin.getDataFolder(),"data.yml"));
             StandardSerializer.getDefault().register(KeyPad.class, new KeyPadSerializer());
+            StandardSerializer.getDefault().register(LockedContainer.class, new LockedContainerSerializer());
             StandardSerializer.getDefault().register(Location.class, new LocationSerializer());
         } catch (IOException e) {
             throw new RuntimeException(e);

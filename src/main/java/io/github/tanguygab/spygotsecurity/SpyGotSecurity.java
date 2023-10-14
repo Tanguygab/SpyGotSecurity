@@ -13,13 +13,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public final class SpyGotSecurity extends JavaPlugin {
 
@@ -47,7 +45,6 @@ public final class SpyGotSecurity extends JavaPlugin {
         plm.registerEvents(new BlockListener(this),this);
 
         commands.put("get",new GetCommand(this));
-        commands.put("list",new ListCommand(this));
     }
 
     @Override
@@ -63,11 +60,24 @@ public final class SpyGotSecurity extends JavaPlugin {
             return true;
         }
         String arg = args[0];
+        if (arg.equalsIgnoreCase("reload") && sender.isOp()) {
+            onDisable();
+            onEnable();
+        }
         if (!commands.containsKey(arg)) {
             sender.sendMessage("WIP");
             return true;
         }
         commands.get(arg).onCommand(sender,Arrays.copyOfRange(args,1,args.length));
         return true;
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        String arg = args.length > 0 ? args[0] : "";
+        if (!commands.containsKey(arg)) return List.of("get","reload");
+        args = Arrays.copyOfRange(args,1, args.length);
+        return commands.get(arg).onTabComplete(sender,args);
     }
 }

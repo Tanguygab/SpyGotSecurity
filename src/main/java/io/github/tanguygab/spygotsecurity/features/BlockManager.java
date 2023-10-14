@@ -3,6 +3,7 @@ package io.github.tanguygab.spygotsecurity.features;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
+import io.github.tanguygab.spygotsecurity.blocks.LockedContainer;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.NamespacedKey;
@@ -39,10 +40,8 @@ public class BlockManager {
         if (type == null) return null;
         return switch (type) {
             case "keypad" -> new KeyPad(block,player);
-            case "keycard-scanner" -> {
-                // WIP
-                yield null;
-            }
+            case "container" -> new LockedContainer(block,player);
+            //case "keycard-scanner" -> null;
             default -> null;
         };
     }
