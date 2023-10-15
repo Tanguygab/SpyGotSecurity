@@ -4,6 +4,7 @@ import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
+import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
 import io.github.tanguygab.spygotsecurity.utils.PasswordUtils;
 import io.github.tanguygab.spygotsecurity.utils.Utils;
@@ -21,13 +22,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @Getter
-public abstract class LockedBlock extends SGSBlock {
+public abstract class LockedBlock extends ConfigurableBlock {
 
     private byte[] password;
     private byte[] salt;
 
-    public LockedBlock(Block block, UUID owner, byte[] password, byte[] salt) {
-        super(block, owner);
+    public LockedBlock(Block block, UUID owner, List<SGSModule> modules, byte[] password, byte[] salt) {
+        super(block, owner, modules);
         this.password = password;
         this.salt = salt;
     }
@@ -35,10 +36,22 @@ public abstract class LockedBlock extends SGSBlock {
     public abstract void onSuccess(Player player);
 
     public void onClick(Player player) {
-        if (!isOwner(player) && password == null) {
-            Utils.send(player,"&cThis keypad hasn't been configured yet!");
+        if (!isOwner(player)) {
+            if (password == null) {
+                Utils.send(player,"&cThis block hasn't been configured yet!");
+                return;
+            }
+            if (isBlacklisted(player)) {
+                Utils.send(player,"&4You're blacklisted from using this!");
+                return;
+            }
+        }
+        if (password != null && isWhitelisted(player)) {
+            Utils.send(player,"&aYou're whitelisted!");
+            onSuccess(player);
             return;
         }
+
         if (plugin().getBlockManager().usePasswords()) {
             if (password == null) {
                 byte[] salt = PasswordUtils.newSalt();

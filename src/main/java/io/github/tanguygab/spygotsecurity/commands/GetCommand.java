@@ -31,6 +31,7 @@ public class GetCommand extends SGSCommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return args.length <= 1 ? List.of("keypad","chest","shulker_box","barrel","hopper","furnace","blast_furnace","smoker") : null;
+        return args.length <= 1 ? List.of("keypad","chest","shulker_box","barrel","hopper","furnace","blast_furnace",
+                "smoker","whitelist","blacklist") : null;
     }
 }

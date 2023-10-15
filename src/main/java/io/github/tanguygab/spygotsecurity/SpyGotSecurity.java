@@ -3,7 +3,7 @@ package io.github.tanguygab.spygotsecurity;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import io.github.tanguygab.spygotsecurity.commands.*;
 import io.github.tanguygab.spygotsecurity.database.DataManager;
-import io.github.tanguygab.spygotsecurity.features.BlockManager;
+import io.github.tanguygab.spygotsecurity.managers.*;
 import io.github.tanguygab.spygotsecurity.listeners.*;
 import lombok.Getter;
 import org.bukkit.command.Command;
@@ -25,6 +25,7 @@ public final class SpyGotSecurity extends JavaPlugin {
 
     @Getter private YamlDocument configuration;
     @Getter private BlockManager blockManager;
+    @Getter private ItemManager itemManager;
     @Getter private DataManager dataManager;
     @Getter private InventoryListener inventoryListener;
 
@@ -37,11 +38,13 @@ public final class SpyGotSecurity extends JavaPlugin {
             throw new RuntimeException(e);
         }
         blockManager = new BlockManager(this);
+        itemManager = new ItemManager(this);
         (dataManager = new DataManager(this)).load();
 
         PluginManager plm = getServer().getPluginManager();
         plm.registerEvents(inventoryListener = new InventoryListener(),this);
         plm.registerEvents(new BlockListener(this),this);
+        plm.registerEvents(new ModuleListener(this),this);
 
         commands.put("get",new GetCommand(this));
     }

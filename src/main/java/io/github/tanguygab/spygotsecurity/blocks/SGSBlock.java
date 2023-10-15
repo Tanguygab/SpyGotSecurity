@@ -19,7 +19,4 @@ public abstract class SGSBlock {
         return player != null && player.getUniqueId().equals(owner);
     }
 
-
-
-
 }

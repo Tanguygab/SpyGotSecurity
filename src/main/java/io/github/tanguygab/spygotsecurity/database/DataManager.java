@@ -7,6 +7,10 @@ import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.blocks.LockedContainer;
 import io.github.tanguygab.spygotsecurity.database.serializers.*;
+import io.github.tanguygab.spygotsecurity.database.serializers.lockedblocks.KeyPadSerializer;
+import io.github.tanguygab.spygotsecurity.database.serializers.lockedblocks.LockedContainerSerializer;
+import io.github.tanguygab.spygotsecurity.modules.ListModule;
+import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import org.bukkit.Location;
 
 import java.io.File;
@@ -24,22 +28,28 @@ public class DataManager {
         this.plugin = plugin;
         try {
             data = YamlDocument.create(new File(plugin.getDataFolder(),"data.yml"));
-            StandardSerializer.getDefault().register(KeyPad.class, new KeyPadSerializer());
-            StandardSerializer.getDefault().register(LockedContainer.class, new LockedContainerSerializer());
-            StandardSerializer.getDefault().register(Location.class, new LocationSerializer());
+            StandardSerializer serializer = StandardSerializer.getDefault();
+            serializer.register(KeyPad.class, new KeyPadSerializer());
+            serializer.register(LockedContainer.class, new LockedContainerSerializer());
+            serializer.register(Location.class, new LocationSerializer());
+            serializer.register(ListModule.class, new ListModuleSerializer());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void load() {
-        @SuppressWarnings("unchecked")
-        List<Map<Object, Object>> list = (List<Map<Object, Object>>) data.getList("locked-blocks");
-        list.forEach(keypad->plugin.getBlockManager().addLockedBlock((LockedBlock) StandardSerializer.getDefault().deserialize(keypad)));
+        List<Map<Object, Object>> modules = (List<Map<Object, Object>>) data.getList("modules");
+        modules.forEach(module->plugin.getItemManager().addModule((SGSModule) StandardSerializer.getDefault().deserialize(module)));
+
+        List<Map<Object, Object>> lockedBlocks = (List<Map<Object, Object>>) data.getList("locked-blocks");
+        lockedBlocks.forEach(locked->plugin.getBlockManager().addLockedBlock((LockedBlock) StandardSerializer.getDefault().deserialize(locked)));
     }
 
     public void unload() {
         data.set("locked-blocks",new ArrayList<>(plugin.getBlockManager().getLockedBlocks().values()));
+        data.set("modules",new ArrayList<>(plugin.getItemManager().getModules().values()));
         try {
             data.save();
         } catch (IOException e) {

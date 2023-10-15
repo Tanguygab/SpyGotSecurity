@@ -2,7 +2,7 @@ package io.github.tanguygab.spygotsecurity.listeners;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
-import io.github.tanguygab.spygotsecurity.features.BlockManager;
+import io.github.tanguygab.spygotsecurity.managers.BlockManager;
 import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
