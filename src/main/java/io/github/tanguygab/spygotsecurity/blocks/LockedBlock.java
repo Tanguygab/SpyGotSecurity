@@ -61,7 +61,7 @@ public abstract class LockedBlock extends ConfigurableBlock {
             openAnvilGUI(player,"Enter your password",salt, password -> onPasswordCheck(player,password));
             return;
         }
-        openMenu(player, password == null ? new SetPasscodeMenu(this,player) : new CheckPasscodeMenu(this,player));
+        (password == null ? new SetPasscodeMenu(this,player) : new CheckPasscodeMenu(this,player)).open();
     }
 
     public void onPasswordSet(Player player, byte[] password, byte[] salt) {
@@ -81,10 +81,6 @@ public abstract class LockedBlock extends ConfigurableBlock {
             return;
         }
         Utils.send(player,"&cWrong passcode!");
-    }
-
-    public void openMenu(Player player, SGSMenu menu) {
-        plugin().getInventoryListener().open(player, menu);
     }
 
     private void openAnvilGUI(Player player, String title, byte[] salt, Consumer<byte[]> onClick) {

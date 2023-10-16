@@ -20,6 +20,14 @@ public abstract class ConfigurableBlock extends SGSBlock {
         this.modules = modules == null ? new ArrayList<>() : modules;
     }
 
+    public boolean hasModule(SGSModule module) {
+        if (modules.contains(module)) return true;
+        for (SGSModule m : modules)
+            if (m.getClass() == module.getClass())
+                return true;
+        return false;
+    }
+
     public boolean isBlacklisted(Player player) {
         for (SGSModule module : modules) {
             if (module instanceof ListModule m && m.isInverted())
@@ -35,5 +43,4 @@ public abstract class ConfigurableBlock extends SGSBlock {
         }
         return false;
     }
-
 }

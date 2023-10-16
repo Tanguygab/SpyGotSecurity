@@ -1,8 +1,8 @@
 package io.github.tanguygab.spygotsecurity.database.serializers.lockedblocks;
 
-import dev.dejvokep.boostedyaml.serialization.standard.StandardSerializer;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
+import io.github.tanguygab.spygotsecurity.database.DataManager;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import org.bukkit.Location;
 
@@ -21,9 +21,7 @@ public abstract class LockedBlockSerializer {
     }
 
     protected Location getLocation(Map<Object, Object> map) {
-        @SuppressWarnings("unchecked")
-        Map<Object, Object> obj = (Map<Object, Object>) map.get("location");
-        return (Location) StandardSerializer.getDefault().deserialize(obj);
+        return (Location) map.get("location");
     }
 
     protected UUID getUUID(Map<Object, Object> map) {

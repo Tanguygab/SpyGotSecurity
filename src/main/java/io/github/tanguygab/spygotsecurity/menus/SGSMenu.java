@@ -30,8 +30,7 @@ public abstract class SGSMenu {
     public abstract void onClick(ItemStack item, int slot, ClickType click);
 
     public void open() {
-        onOpen();
-        player.openInventory(inv);
+        plugin.getInventoryListener().open(player,this);
     }
     public void close() {
         plugin.getInventoryListener().close(player);
@@ -46,13 +45,14 @@ public abstract class SGSMenu {
         }
     }
 
+    public void fillBorders() {
+        fillSlots(Material.GRAY_STAINED_GLASS_PANE,0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,
+                46,47,48,49,50,51,52,53);
+    }
+
     public void fillSlots(Material mat, int... slots) {
         ItemStack filler = getItem(mat, " ");
         for (Integer slot : slots) inv.setItem(slot,filler);
-    }
-
-    public void open(SGSMenu menu) {
-        plugin.getInventoryListener().open(player,menu);
     }
 
     protected ItemStack getItem(ItemStack item, String name) {

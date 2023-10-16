@@ -7,6 +7,7 @@ import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,9 +19,9 @@ public class ModuleListener implements Listener {
 
     private SpyGotSecurity plugin;
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onClick(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.useItemInHand() == Event.Result.DENY || e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         ItemManager im = plugin.getItemManager();
         SGSModule module = im.getModuleFromItem(e.getItem());
         if (module == null) return;
@@ -34,14 +35,14 @@ public class ModuleListener implements Listener {
                     locked.onClick(player);
                     return;
                 }
-                if (!locked.getModules().contains(module)) {
+                if (!locked.hasModule(module)) {
                     locked.getModules().add(module);
                     Utils.send(player, "&aModule inserted!");
                     return;
                 }
             }
         }
-        plugin.getInventoryListener().open(player,module.getMenu(player));
+        module.getMenu(player).open();
     }
 
 }

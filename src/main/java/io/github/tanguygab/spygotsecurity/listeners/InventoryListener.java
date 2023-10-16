@@ -13,13 +13,14 @@ import java.util.Map;
 
 public class InventoryListener implements Listener {
 
-    public final Map<Player,SGSMenu> openedMenus = new HashMap<>();
+    private final Map<Player,SGSMenu> openedMenus = new HashMap<>();
 
     @EventHandler
     public void onInvClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player p) || !openedMenus.containsKey(p) || e.getClick() == ClickType.DOUBLE_CLICK) return;
-        openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot(),e.getClick());
+        if (!(e.getWhoClicked() instanceof Player p) || !openedMenus.containsKey(p)) return;
         e.setCancelled(true);
+        if (e.getClick() == ClickType.DOUBLE_CLICK) return;
+        openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot(),e.getClick());
     }
 
     @EventHandler
@@ -29,14 +30,15 @@ public class InventoryListener implements Listener {
         if (menu != null && menu.inv.equals(e.getInventory())) openedMenus.get(p).close();
     }
 
-    public void open(Player p, SGSMenu menu) {
-        openedMenus.put(p,menu);
-        menu.open();
+    public void open(Player player, SGSMenu menu) {
+        openedMenus.put(player,menu);
+        menu.onOpen();
+        player.openInventory(menu.inv);
     }
 
-    public void close(Player p) {
-        openedMenus.remove(p);
-        p.closeInventory();
+    public void close(Player player) {
+        openedMenus.remove(player);
+        player.closeInventory();
     }
 
 }

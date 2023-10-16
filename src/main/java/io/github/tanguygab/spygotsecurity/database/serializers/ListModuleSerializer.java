@@ -14,7 +14,8 @@ public class ListModuleSerializer implements TypeAdapter<ListModule> {
         Map<Object, Object> map = new HashMap<>();
         map.put("uuid",module.getUuid());
         map.put("inverted",module.isInverted());
-        map.put("players",module.getPlayers().stream().map(UUID::toString).toList());
+        map.put("public",module.isPublik());
+        map.put("players",module.getPlayers());
         return map;
     }
 
@@ -23,8 +24,9 @@ public class ListModuleSerializer implements TypeAdapter<ListModule> {
     public ListModule deserialize(@NotNull Map<Object, Object> map) {
         UUID uuid = (UUID) map.get("uuid");
         boolean inverted = (boolean) map.get("inverted");
+        boolean publik = (boolean) map.get("public");
         @SuppressWarnings("unchecked")
         List<UUID> players = (List<UUID>) map.get("players");
-        return new ListModule(uuid,inverted,players);
-}
+        return new ListModule(uuid,inverted,publik,players);
+    }
 }
