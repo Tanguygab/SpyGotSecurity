@@ -71,7 +71,7 @@ public class BlockListener implements Listener {
             send(player,"&cYou are not the owner of this block!");
             return;
         }
-        plugin.getBlockManager().getLockedBlocks().remove(e.getBlock());
+        plugin.getBlockManager().getLockedBlocks().remove(block);
         ItemStack drop = bm.getItem(locked);
         if (drop == null) return; // Block was changed while plugin was unloaded
         e.setDropItems(false);
@@ -89,6 +89,10 @@ public class BlockListener implements Listener {
                 drop(item, block);
             }
         }
+        locked.getModules().values().forEach(module->{
+            ItemStack item = plugin.getItemManager().getItemFromModule(module);
+            drop(item, block);
+        });
 
         send(player,"&cLocked Block deleted!");
         if (box != null) {

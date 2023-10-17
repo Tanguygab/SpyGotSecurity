@@ -1,5 +1,22 @@
 locked-blocks:
   method: PASSCODE # PASSCODE or PASSWORD
+  keypad: true
+  containers:
+    chest: true
+    shulker-box: true
+    barrel: true
+    hopper: true
+    furnaces: true
+
+modules:
+  whitelist: true
+  blacklist: true
+  harming:
+    enabled: true
+    damage: 2.0
+  disguise:
+    enabled: true
+    disabled-blocks: []
 
 codebreaker:
   enabled: true

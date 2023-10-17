@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 @AllArgsConstructor
 public class ModuleListener implements Listener {
@@ -23,8 +24,9 @@ public class ModuleListener implements Listener {
     public void onClick(PlayerInteractEvent e) {
         if (e.useItemInHand() == Event.Result.DENY || e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         ItemManager im = plugin.getItemManager();
-        SGSModule module = im.getModuleFromItem(e.getItem());
-        if (module == null) return;
+        ItemStack item = e.getItem();
+        SGSModule module = im.getModuleFromItem(item);
+        if (item == null || module == null || !im.getAllowedModules().contains(module.getType())) return;
 
         e.setCancelled(true);
         Player player = e.getPlayer();
@@ -36,8 +38,9 @@ public class ModuleListener implements Listener {
                     return;
                 }
                 if (!locked.hasModule(module)) {
-                    locked.getModules().add(module);
+                    locked.getModules().put(module.getType(),module);
                     Utils.send(player, "&aModule inserted!");
+                    player.getInventory().remove(item);
                     return;
                 }
             }

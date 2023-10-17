@@ -2,6 +2,7 @@ package io.github.tanguygab.spygotsecurity.menus.modules;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.modules.ListModule;
+import io.github.tanguygab.spygotsecurity.modules.ModuleType;
 import net.wesjd.anvilgui.AnvilGUI;
 import net.wesjd.anvilgui.AnvilGUI.ResponseAction;
 import org.bukkit.Bukkit;
@@ -31,9 +32,9 @@ public class ListModuleMenu extends ModuleMenu<ListModule> {
 
     @Override
     public void onOpen() {
-        inv = plugin.getServer().createInventory(null, 54, (module.isInverted()?"Blacklist":"Whitelist") + "ed players ("+page+"/"+getMaxPage()+")");
+        inv = plugin.getServer().createInventory(null, 54, module.getType().getName() + "ed players ("+page+"/"+getMaxPage()+")");
         fillBorders();
-        fillSlots(Material.GRAY_STAINED_GLASS_PANE,15,24,33,42);
+        fillSlots(15,24,33,42);
         inv.setItem(34,getItem(Material.BARRIER,"Clear List"));
         updatePublic(module.isPublik());
 

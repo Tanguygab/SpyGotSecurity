@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 
 public class SetPasscodeMenu extends PasscodeMenu {
 
-    public SetPasscodeMenu(LockedBlock block, Player player) {
-        super(block, player, "Set your Passcode");
+    public SetPasscodeMenu(Player player, LockedBlock block) {
+        super(player, block, "Set your Passcode");
     }
 
     @Override

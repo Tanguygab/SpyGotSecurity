@@ -11,17 +11,15 @@ import java.util.*;
 @Getter
 public class ListModule extends SGSModule {
 
-    private final boolean inverted;
     @Setter private boolean publik;
     private final List<UUID> players;
 
-    public ListModule(UUID uuid, boolean inverted) {
-        this(uuid,inverted,false,new ArrayList<>());
+    public ListModule(UUID uuid, boolean blacklist) {
+        this(uuid,blacklist,false,new ArrayList<>());
     }
 
-    public ListModule(UUID uuid, boolean inverted, boolean publik, List<UUID> players) {
-        super(uuid);
-        this.inverted = inverted;
+    public ListModule(UUID uuid, boolean blacklist, boolean publik, List<UUID> players) {
+        super(uuid, blacklist ? ModuleType.BLACKLIST : ModuleType.WHITELIST);
         this.publik = publik;
         this.players = players;
     }

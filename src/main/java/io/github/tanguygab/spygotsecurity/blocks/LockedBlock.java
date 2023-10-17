@@ -1,7 +1,7 @@
 package io.github.tanguygab.spygotsecurity.blocks;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
+import io.github.tanguygab.spygotsecurity.menus.configurable.LockedBlockConfigMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
@@ -45,7 +45,11 @@ public abstract class LockedBlock extends ConfigurableBlock {
                 Utils.send(player,"&4You're blacklisted from using this!");
                 return;
             }
+        } else if (player.isSneaking()) {
+            new LockedBlockConfigMenu(player,this).open();
+            return;
         }
+
         if (password != null && isWhitelisted(player)) {
             Utils.send(player,"&aYou're whitelisted!");
             onSuccess(player);
@@ -61,7 +65,7 @@ public abstract class LockedBlock extends ConfigurableBlock {
             openAnvilGUI(player,"Enter your password",salt, password -> onPasswordCheck(player,password));
             return;
         }
-        (password == null ? new SetPasscodeMenu(this,player) : new CheckPasscodeMenu(this,player)).open();
+        (password == null ? new SetPasscodeMenu(player,this) : new CheckPasscodeMenu(player,this)).open();
     }
 
     public void onPasswordSet(Player player, byte[] password, byte[] salt) {

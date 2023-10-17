@@ -2,7 +2,6 @@ package io.github.tanguygab.spygotsecurity.database.serializers.lockedblocks;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
-import io.github.tanguygab.spygotsecurity.database.DataManager;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import org.bukkit.Location;
 
@@ -14,7 +13,7 @@ public abstract class LockedBlockSerializer {
         Map<Object,Object> map = new HashMap<>();
         map.put("location",block.getBlock().getLocation());
         map.put("uuid",block.getOwner());
-        map.put("modules",block.getModules().stream().map(SGSModule::getUuid).toList());
+        map.put("modules",block.getModules().values().stream().map(SGSModule::getUuid).toList());
         map.put("password",block.getPassword());
         map.put("salt",block.getSalt());
         return map;

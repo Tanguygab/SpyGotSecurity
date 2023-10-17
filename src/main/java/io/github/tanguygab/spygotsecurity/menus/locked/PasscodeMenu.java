@@ -16,7 +16,7 @@ public abstract class PasscodeMenu extends SGSMenu {
     private final Map<Integer,Integer> numbers = new HashMap<>();
     private boolean showPasscode = false;
 
-    public PasscodeMenu(LockedBlock block, Player player, String title) {
+    public PasscodeMenu(Player player, LockedBlock block, String title) {
         super(player);
         this.block = block;
         inv = plugin.getServer().createInventory(null, 54, title);

@@ -46,12 +46,16 @@ public abstract class SGSMenu {
     }
 
     public void fillBorders() {
-        fillSlots(Material.GRAY_STAINED_GLASS_PANE,0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,
-                46,47,48,49,50,51,52,53);
+        fillSlots(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35);
+        if (inv.getSize() == 36) {
+            fillSlots(28,29,30,31,32,33,34);
+            return;
+        }
+        fillSlots(36,44,45,46,47,48,49,50,51,52,53);
     }
 
-    public void fillSlots(Material mat, int... slots) {
-        ItemStack filler = getItem(mat, " ");
+    public void fillSlots(int... slots) {
+        ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
         for (Integer slot : slots) inv.setItem(slot,filler);
     }
 

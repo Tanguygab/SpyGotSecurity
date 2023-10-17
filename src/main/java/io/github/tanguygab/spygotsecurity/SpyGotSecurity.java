@@ -37,8 +37,8 @@ public final class SpyGotSecurity extends JavaPlugin {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        blockManager = new BlockManager(this);
-        itemManager = new ItemManager(this);
+        blockManager = new BlockManager(configuration);
+        itemManager = new ItemManager(configuration);
         dataManager = new DataManager(this);
 
         PluginManager plm = getServer().getPluginManager();
@@ -46,7 +46,8 @@ public final class SpyGotSecurity extends JavaPlugin {
         plm.registerEvents(new BlockListener(this),this);
         plm.registerEvents(new ModuleListener(this),this);
 
-        commands.put("get",new GetCommand(this));
+        commands.put("block",new BlockCommand(this));
+        commands.put("item",new ItemCommand(this));
     }
 
     @Override

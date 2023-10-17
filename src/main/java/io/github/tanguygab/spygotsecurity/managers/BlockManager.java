@@ -1,5 +1,6 @@
 package io.github.tanguygab.spygotsecurity.managers;
 
+import dev.dejvokep.boostedyaml.YamlDocument;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
@@ -14,7 +15,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -25,9 +28,22 @@ public class BlockManager {
     @Accessors(fluent = true)
     private final boolean usePasswords;
     private final Map<Block, LockedBlock> lockedBlocks = new HashMap<>();
+    private final boolean KEYPAD_ENABLED;
+    private final List<Material> allowedContainers = new ArrayList<>();
 
-    public BlockManager(SpyGotSecurity plugin) {
-        usePasswords = plugin.getConfiguration().getString("locked-blocks.method","PASSCODE").equalsIgnoreCase("password");
+    public BlockManager(YamlDocument config) {
+        usePasswords = config.getString("locked-blocks.method","PASSCODE").equalsIgnoreCase("password");
+        KEYPAD_ENABLED = config.getBoolean("locked-blocks.keypad",true);
+        allowContainer(config,"chest",Material.CHEST);
+        allowContainer(config,"shulker-box",Material.SHULKER_BOX);
+        allowContainer(config,"barrel",Material.BARREL);
+        allowContainer(config,"hopper",Material.HOPPER);
+        allowContainer(config,"furnaces",Material.FURNACE,Material.SMOKER,Material.BLAST_FURNACE);
+    }
+
+    private void allowContainer(YamlDocument config, String name, Material... materials) {
+        if (config.getBoolean("locked-blocks.containers"+name,true))
+            allowedContainers.addAll(List.of(materials));
     }
 
     public void addLockedBlock(LockedBlock block) {
@@ -35,9 +51,12 @@ public class BlockManager {
     }
 
     public LockedBlock getBlockFromItem(Block block, Player player, ItemStack item) {
-        return switch (ItemUtils.getTypeFromItem(LOCKED_BLOCK,item)) {
-            case "keypad" -> new KeyPad(block,player);
-            case "container" -> new LockedContainer(block,player);
+        String type = ItemUtils.getTypeFromItem(LOCKED_BLOCK,item);
+        if (type == null) return null;
+        return switch (type) {
+            case "keypad" -> KEYPAD_ENABLED ? new KeyPad(block,player) : null;
+            case "container" -> allowedContainers.contains(block.getType().toString().contains("SHULKER_BOX")
+                    ? Material.SHULKER_BOX : block.getType()) ? new LockedContainer(block,player) : null;
             //case "keycard-scanner" -> null;
             default -> null;
         };
@@ -51,7 +70,7 @@ public class BlockManager {
 
     public ItemStack getItemFromType(String type) {
         return switch (type) {
-            case "keypad" -> getItem(Material.IRON_BLOCK,"&8&lKeypad","keypad");
+            case "keypad" -> KEYPAD_ENABLED ? getItem(Material.IRON_BLOCK,"&8&lKeypad","keypad") : null;
             case "chest" -> getItem(Material.CHEST,"&6&lChest","container");
             case "shulker_box" -> getItem(Material.SHULKER_BOX,"&d&lShulker Box","container");
             case "barrel" -> getItem(Material.BARREL,"&6&lBarrel","container");
@@ -64,6 +83,7 @@ public class BlockManager {
     }
 
     private ItemStack getItem(Material material, String name, String data) {
+        if (material != Material.IRON_BLOCK && !allowedContainers.contains(material)) return null;
         return ItemUtils.getItem(material,name,LOCKED_BLOCK,data,"","&8Place and right-click me","&8to set a password!");
     }
 

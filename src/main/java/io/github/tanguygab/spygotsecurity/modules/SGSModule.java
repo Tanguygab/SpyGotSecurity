@@ -12,6 +12,7 @@ import java.util.UUID;
 public abstract class SGSModule {
 
     private final UUID uuid;
+    private final ModuleType type;
 
     public abstract SGSMenu getMenu(Player player);
 
