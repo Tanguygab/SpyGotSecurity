@@ -5,6 +5,7 @@ import io.github.tanguygab.spygotsecurity.commands.*;
 import io.github.tanguygab.spygotsecurity.database.DataManager;
 import io.github.tanguygab.spygotsecurity.managers.*;
 import io.github.tanguygab.spygotsecurity.listeners.*;
+import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -59,27 +60,43 @@ public final class SpyGotSecurity extends JavaPlugin {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("WIP");
+            Utils.send(sender,getHelpMessage());
             return true;
         }
         String arg = args[0];
         if (arg.equalsIgnoreCase("reload") && sender.isOp()) {
             onDisable();
             onEnable();
+            Utils.send(sender,"&aReloaded!");
+            return true;
         }
         if (!commands.containsKey(arg)) {
-            sender.sendMessage("WIP");
+            Utils.send(sender,getHelpMessage());
             return true;
         }
         commands.get(arg).onCommand(sender,Arrays.copyOfRange(args,1,args.length));
         return true;
     }
 
+    private String getHelpMessage() {
+        return "&6&m                                        \n"
+                + "&8[&7SpyGotSecurity&8] &7" + getDescription().getVersion() + "\n"
+                + " &8- &f/sgs\n"
+                + "   &8| &7Default help page\n"
+                + " &8- &f/sgs item\n"
+                + "   &8| &7Gives items\n"
+                + " &8- &f/sgs block\n"
+                + "   &8| &7Gives blocks\n"
+                + " &8- &f/sgs reload\n"
+                + "   &8| &7Reload the plugin\n"
+                + "&6&m                                        ";
+    }
+
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         String arg = args.length > 0 ? args[0] : "";
-        if (!commands.containsKey(arg)) return List.of("get","reload");
+        if (!commands.containsKey(arg)) return List.of("item","block","reload");
         args = Arrays.copyOfRange(args,1, args.length);
         return commands.get(arg).onTabComplete(sender,args);
     }
