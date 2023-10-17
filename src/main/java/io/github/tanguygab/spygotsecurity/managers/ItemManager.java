@@ -58,6 +58,7 @@ public class ItemManager {
                 //case "disguise" -> null;
                 default -> null;
             };
+            if (module == null) return null;
             item.setItemMeta(ItemUtils.setData(item.getItemMeta(),MODULE,uuid.toString()));
             addModule(module);
             return module;

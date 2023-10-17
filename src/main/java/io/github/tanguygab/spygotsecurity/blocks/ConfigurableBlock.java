@@ -1,11 +1,13 @@
 package io.github.tanguygab.spygotsecurity.blocks;
 
+import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.modules.ListModule;
 import io.github.tanguygab.spygotsecurity.modules.ModuleType;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -20,8 +22,17 @@ public abstract class ConfigurableBlock extends SGSBlock {
         modules.forEach(module->this.modules.put(module.getType(),module));
     }
 
-    public boolean hasModule(SGSModule module) {
-        return modules.containsKey(module.getType());
+    public void addModule(Player player, SGSModule module, ItemStack moduleItem) {
+        SGSModule previous = modules.put(module.getType(),module);
+        player.getInventory().remove(moduleItem);
+        if (previous != null) removeModule(player,previous);
+    }
+
+    public void removeModule(Player player, SGSModule module) {
+        ItemStack item = SpyGotSecurity.getInstance().getItemManager().getItemFromModule(module);
+        if (modules.get(module.getType()) == module) modules.remove(module.getType());
+        if (player.getInventory().addItem(item).isEmpty()) return;
+        Objects.requireNonNull(player.getLocation().getWorld()).dropItem(player.getLocation(),item);
     }
 
     public boolean isBlacklisted(Player player) {
