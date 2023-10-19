@@ -13,6 +13,7 @@ import java.util.*;
 
 public class ItemManager {
 
+    public static final NamespacedKey ITEM = new NamespacedKey(SpyGotSecurity.getInstance(),"item");
     private static final NamespacedKey MODULE = new NamespacedKey(SpyGotSecurity.getInstance(),"module");
 
     @Getter private final Map<UUID, SGSModule> modules = new HashMap<>();
@@ -64,23 +65,38 @@ public class ItemManager {
     }
 
     public ItemStack getItemFromModule(SGSModule module) {
-        ItemStack item = getItemFromType(module.getType());
+        ItemStack item = getItemFromModuleType(module.getType());
         item.setItemMeta(ItemUtils.setData(item.getItemMeta(),MODULE,module.getUuid().toString()));
         return item;
     }
 
-    public ItemStack getItemFromType(ModuleType type) {
+    public ItemStack getItemFromType(String type) {
         if (type == null) return null;
         return switch (type) {
-            case WHITELIST -> getItem(Material.PAPER,"&a&lWhiteList","whitelist");
-            case BLACKLIST -> getItem(Material.PAPER,"&a&lBlackList","blacklist");
-            case DISGUISE -> getItem(Material.PAINTING,"&6&lDisguise Module","disguise");
-            case HARMING -> getItem(Material.ITEM_FRAME,"&6&lHarming Module","harming");
+            case "codebreaker" -> getItem(Material.IRON_DOOR,"&d&lCodeBreaker",type,"","&8Right-Click a locked block to break-in");
+            case "lockpick" -> getItem(Material.IRON_HOE,"&d&lLockPick",type,"","&8Right-Click a locked block to lockpick");
+            case "reinforcer" -> getItem(Material.IRON_SHOVEL,"&d&lBlock Reinforcer",type,"","&8Left-Click a block to reinforce","&7Right-Click to open menu");
+            case "remover" -> getItem(Material.IRON_PICKAXE,"&d&lBlock Remover",type,"","&8Right-Click a reinforced block to remove");
+            default -> getItemFromModuleType(ModuleType.get(type));
+        };
+    }
+    public ItemStack getItemFromModuleType(ModuleType type) {
+        if (type == null) return null;
+        return switch (type) {
+            case WHITELIST -> getItem(Material.PAPER,"&a&lWhiteList","m:whitelist","","&8Right-Click to add players");
+            case BLACKLIST -> getItem(Material.PAPER,"&a&lBlackList","m:blacklist","","&8Right-Click to add players");
+            case DISGUISE -> getItem(Material.PAINTING,"&6&lDisguise Module","m:disguise","","&8Right-Click to set a disguise");
+            case HARMING -> getItem(Material.ITEM_FRAME,"&6&lHarming Module","m:harming");
         };
     }
 
-    private ItemStack getItem(Material material, String name, String data) {
-        return ItemUtils.getItem(material,name,MODULE,data,"","&8Place and right-click me","&8to set a password!");
+    private ItemStack getItem(Material material, String name, String data, String... lore) {
+        NamespacedKey key = ITEM;
+        if (data.startsWith("m:")) {
+            key = MODULE;
+            data = data.substring(2);
+        }
+        return ItemUtils.getItem(material,name,key,data,lore);
     }
 
 }

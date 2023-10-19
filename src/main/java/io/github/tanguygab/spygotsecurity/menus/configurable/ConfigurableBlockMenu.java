@@ -42,7 +42,7 @@ public abstract class ConfigurableBlockMenu<ConfigurableBlock> extends SGSMenu {
             int slot = 10+allowedModules.indexOf(module);
             ItemStack moduleItem;
             if (block().getModules().containsKey(module)) {
-                moduleItem = plugin.getItemManager().getItemFromType(module);
+                moduleItem = plugin.getItemManager().getItemFromModuleType(module);
                 ItemMeta meta = moduleItem.getItemMeta();
                 assert meta != null;
                 meta.addEnchant(Enchantment.DURABILITY,1,true);

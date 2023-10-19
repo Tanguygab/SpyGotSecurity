@@ -1,7 +1,6 @@
 package io.github.tanguygab.spygotsecurity.commands;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.modules.ModuleType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +20,7 @@ public class ItemCommand extends SGSCommand {
             return;
         }
         String type = args.length > 0 ? args[0] : "";
-        ItemStack item = plugin.getItemManager().getItemFromType(ModuleType.get(type));
+        ItemStack item = plugin.getItemManager().getItemFromType(type);
         if (item == null) {
             send(sender,"&cInvalid item!");
             return;
