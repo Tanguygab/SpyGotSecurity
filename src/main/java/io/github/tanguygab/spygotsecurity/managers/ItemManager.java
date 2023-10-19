@@ -2,9 +2,7 @@ package io.github.tanguygab.spygotsecurity.managers;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.modules.ListModule;
-import io.github.tanguygab.spygotsecurity.modules.ModuleType;
-import io.github.tanguygab.spygotsecurity.modules.SGSModule;
+import io.github.tanguygab.spygotsecurity.modules.*;
 import io.github.tanguygab.spygotsecurity.utils.ItemUtils;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -13,15 +11,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-@Getter
 public class ItemManager {
 
     private static final NamespacedKey MODULE = new NamespacedKey(SpyGotSecurity.getInstance(),"module");
 
-    private final Map<UUID, SGSModule> modules = new HashMap<>();
-    private final List<ModuleType> allowedModules = new ArrayList<>();
-    private final double HARMING_DAMAGE;
-    private final List<Material> disabledDisguises = new ArrayList<>();
+    @Getter private final Map<UUID, SGSModule> modules = new HashMap<>();
+    @Getter private final List<ModuleType> allowedModules = new ArrayList<>();
+    @Getter private final List<Material> disabledDisguises = new ArrayList<>();
+    public final double HARMING_DAMAGE;
 
     public ItemManager(YamlDocument config) {
         for (ModuleType type : ModuleType.values())
@@ -55,7 +52,8 @@ public class ItemManager {
             uuid = UUID.randomUUID();
             SGSModule module = switch (type) {
                 case "whitelist","blacklist" -> new ListModule(uuid,type.equals("blacklist"));
-                //case "disguise" -> null;
+                case "harming" -> new HarmingModule(uuid);
+                case "disguise" -> new DisguiseModule(uuid);
                 default -> null;
             };
             if (module == null) return null;

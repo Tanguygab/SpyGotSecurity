@@ -4,6 +4,7 @@ import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.menus.configurable.LockedBlockConfigMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
+import io.github.tanguygab.spygotsecurity.modules.ModuleType;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
 import io.github.tanguygab.spygotsecurity.utils.PasswordUtils;
@@ -85,6 +86,7 @@ public abstract class LockedBlock extends ConfigurableBlock {
             return;
         }
         Utils.send(player,"&cWrong passcode!");
+        harmPlayer(player);
     }
 
     private void openAnvilGUI(Player player, String title, byte[] salt, Consumer<byte[]> onClick) {
@@ -98,10 +100,6 @@ public abstract class LockedBlock extends ConfigurableBlock {
                     return List.of(AnvilGUI.ResponseAction.close());
                 }))
                 .open(player);
-    }
-
-    protected SpyGotSecurity plugin() {
-        return SpyGotSecurity.getInstance();
     }
 
     public void syncPasswordTo(LockedBlock side) {

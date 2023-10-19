@@ -3,6 +3,7 @@ package io.github.tanguygab.spygotsecurity.listeners;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.managers.ItemManager;
+import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -50,7 +51,8 @@ public class ModuleListener implements Listener {
                 return;
             }
         }
-        module.getMenu(player).open();
+        SGSMenu moduleMenu = module.getMenu(player);
+        if (moduleMenu != null) moduleMenu.open();
     }
 
 }

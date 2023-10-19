@@ -6,11 +6,11 @@ import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.blocks.LockedContainer;
-import io.github.tanguygab.spygotsecurity.database.serializers.*;
+import io.github.tanguygab.spygotsecurity.database.serializers.LocationSerializer;
 import io.github.tanguygab.spygotsecurity.database.serializers.lockedblocks.KeyPadSerializer;
 import io.github.tanguygab.spygotsecurity.database.serializers.lockedblocks.LockedContainerSerializer;
-import io.github.tanguygab.spygotsecurity.modules.ListModule;
-import io.github.tanguygab.spygotsecurity.modules.SGSModule;
+import io.github.tanguygab.spygotsecurity.database.serializers.modules.*;
+import io.github.tanguygab.spygotsecurity.modules.*;
 import lombok.Getter;
 import org.bukkit.Location;
 
@@ -24,13 +24,15 @@ public class DataManager {
     private final SpyGotSecurity plugin;
     private final YamlDocument modules;
     private final YamlDocument lockedBlocks;
-    @Getter private final static StandardSerializer serializer = StandardSerializer.getDefault();//new StandardSerializer(StandardSerializer.DEFAULT_SERIALIZED_TYPE_KEY);
+    @Getter private final static StandardSerializer serializer = StandardSerializer.getDefault();
 
     static {
         serializer.register(Location.class, new LocationSerializer());
         serializer.register(KeyPad.class, new KeyPadSerializer());
         serializer.register(LockedContainer.class, new LockedContainerSerializer());
         serializer.register(ListModule.class, new ListModuleSerializer());
+        serializer.register(HarmingModule.class, new HarmingModuleSerializer());
+        serializer.register(DisguiseModule.class, new DisguiseModuleSerializer());
     }
 
     @SuppressWarnings("unchecked")

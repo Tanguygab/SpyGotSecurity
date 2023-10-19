@@ -1,4 +1,4 @@
-package io.github.tanguygab.spygotsecurity.database.serializers;
+package io.github.tanguygab.spygotsecurity.database.serializers.modules;
 
 import dev.dejvokep.boostedyaml.serialization.standard.TypeAdapter;
 import io.github.tanguygab.spygotsecurity.modules.ListModule;
