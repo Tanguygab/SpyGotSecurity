@@ -52,7 +52,7 @@ public abstract class ConfigurableBlock extends SGSBlock {
 
     public void harmPlayer(Player player) {
         if (modules.containsKey(ModuleType.HARMING))
-            player.damage(plugin().getItemManager().HARMING_DAMAGE);
+            plugin().getServer().getScheduler().runTask(plugin(),()->player.damage(plugin().getItemManager().HARMING_DAMAGE));
     }
 
     protected SpyGotSecurity plugin() {
