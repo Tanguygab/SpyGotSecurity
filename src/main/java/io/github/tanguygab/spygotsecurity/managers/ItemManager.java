@@ -14,12 +14,14 @@ import java.util.*;
 public class ItemManager {
 
     public static final NamespacedKey ITEM = new NamespacedKey(SpyGotSecurity.getInstance(),"item");
+    public static final NamespacedKey CODEBREAKER = new NamespacedKey(SpyGotSecurity.getInstance(),"codebreaker");
     private static final NamespacedKey MODULE = new NamespacedKey(SpyGotSecurity.getInstance(),"module");
 
     @Getter private final Map<UUID, SGSModule> modules = new HashMap<>();
     @Getter private final List<ModuleType> allowedModules = new ArrayList<>();
     @Getter private final List<Material> disabledDisguises = new ArrayList<>();
     public final double HARMING_DAMAGE;
+    public final double CODEBREAKER_CHANCE;
 
     public ItemManager(YamlDocument config) {
         for (ModuleType type : ModuleType.values())
@@ -27,6 +29,7 @@ public class ItemManager {
                 allowedModules.add(type);
 
         HARMING_DAMAGE = config.getDouble("modules.harming.damage",2.);
+        CODEBREAKER_CHANCE = config.getDouble("modules.codebreaker.success-chance",0.33);
 
         if (config.contains("modules.disguise.disabled-blocks"))
             config.getStringList("modules.disguise.disabled-blocks").forEach(block->{
@@ -73,7 +76,7 @@ public class ItemManager {
     public ItemStack getItemFromType(String type) {
         if (type == null) return null;
         return switch (type) {
-            case "codebreaker" -> getItem(Material.IRON_DOOR,"&d&lCodeBreaker",type,"","&8Right-Click a locked block to break-in");
+            case "codebreaker" -> getItem(Material.IRON_DOOR,"&d&lCodeBreaker","c:3","","&8Right-Click a locked block to break-in");
             case "lockpick" -> getItem(Material.IRON_HOE,"&d&lLockPick",type,"","&8Right-Click a locked block to lockpick");
             case "reinforcer" -> getItem(Material.IRON_SHOVEL,"&d&lBlock Reinforcer",type,"","&8Left-Click a block to reinforce","&7Right-Click to open menu");
             case "remover" -> getItem(Material.IRON_PICKAXE,"&d&lBlock Remover",type,"","&8Right-Click a reinforced block to remove");
@@ -96,7 +99,22 @@ public class ItemManager {
             key = MODULE;
             data = data.substring(2);
         }
+        if (data.startsWith("c:")) {
+            key = CODEBREAKER;
+            data = data.substring(2);
+        }
         return ItemUtils.getItem(material,name,key,data,lore);
+    }
+
+    public int getCodeBreakerUses(ItemStack item) {
+        String data = ItemUtils.getTypeFromItem(CODEBREAKER,item);
+        if (data == null) return -1;
+        try {return Integer.parseInt(data);}
+        catch (Exception e) {return -1;}
+    }
+
+    public void setCodebreakerUses(ItemStack item, int uses) {
+        item.setItemMeta(ItemUtils.setData(item.getItemMeta(),CODEBREAKER,uses+""));
     }
 
 }

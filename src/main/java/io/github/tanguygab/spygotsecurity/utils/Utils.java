@@ -8,8 +8,11 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Utils {
+
+    public final static Random RANDOM = new Random();
 
     public static String color(String string) {
         return ChatColor.translateAlternateColorCodes('&',string);

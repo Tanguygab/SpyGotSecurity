@@ -20,7 +20,7 @@ modules:
 
 codebreaker:
   enabled: true
-  success-chance: 30
+  success-chance: 0.33
 
 lockpick:
   enabled: true

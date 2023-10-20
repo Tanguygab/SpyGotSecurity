@@ -18,11 +18,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ItemListener implements Listener {
@@ -42,54 +41,42 @@ public class ItemListener implements Listener {
         if (e.useItemInHand() == Event.Result.DENY || e.getHand() == EquipmentSlot.OFF_HAND || clickers.contains(player)) return;
         clickers.add(player);
         plugin.getServer().getScheduler().runTaskLater(plugin,()->clickers.remove(player),3);
+
         Block block = e.getClickedBlock();
         ItemStack item = e.getItem();
         String type = ItemUtils.getTypeFromItem(ItemManager.ITEM,item);
         if (type == null) return;
+        e.setCancelled(true);
+        Map<Block,UUID> blocks = plugin.getBlockManager().getReinforcedBlocks();
         switch (type) {
-            case "codebreaker" -> {
-                if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-            }
-            case "lockpick" -> {}
+            case "lockpick","codebreaker" -> {}
             case "remover" -> {
-                if (block != null && isOwner(block,player)) block.breakNaturally();
+                if (block != null && player.getUniqueId().equals(blocks.get(block)))
+                    block.breakNaturally();
             }
             case "reinforcer" -> {
                 switch (e.getAction()) {
                     case RIGHT_CLICK_AIR -> new BlockReinforcerMenu(player).open();
                     case LEFT_CLICK_BLOCK -> {
                         if (block == null || !block.getType().isSolid()) return;
-                        if (player.isSneaking() && isOwner(block,player)) {
+                        if (player.isSneaking() && player.getUniqueId().equals(blocks.get(block))) {
                             Utils.actionbar(player,"&cBlock Turned back to normal!");
-                            block.removeMetadata("reinforced", plugin);
-                            e.setCancelled(true);
+                            blocks.remove(block);
                             return;
                         }
-                        if (block.hasMetadata("reinforced")) return;
-                        block.setMetadata("reinforced", new FixedMetadataValue(plugin,player.getUniqueId()));
+                        if (blocks.containsKey(block)) return;
+                        blocks.put(block,player.getUniqueId());
                         Utils.actionbar(player,"&aBlock Reinforced!");
-                        e.setCancelled(true);
                     }
                 }
             }
             default -> {
                 if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
                 SGSModule module = im.getModuleFromItem(item);
-                if (module == null || !im.getAllowedModules().contains(module.getType())) return;
-                e.setCancelled(true);
-                onModule(module, player, item, block);
+                if (module != null && im.getAllowedModules().contains(module.getType()))
+                    onModule(module, player, item, block);
             }
         }
-    }
-
-    private boolean isOwner(Block block, Player player) {
-        if (!block.hasMetadata("reinforced")) return false;
-        for (MetadataValue m : block.getMetadata("reinforced")) {
-            if (m.value() instanceof UUID uuid && uuid.equals(player.getUniqueId()))
-                return true;
-
-        }
-        return false;
     }
 
     public void onModule(SGSModule module, Player player, ItemStack item, Block block) {

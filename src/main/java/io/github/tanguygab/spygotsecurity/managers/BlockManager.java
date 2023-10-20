@@ -25,6 +25,7 @@ public class BlockManager {
     @Accessors(fluent = true)
     private final boolean usePasswords;
     private final Map<Block, LockedBlock> lockedBlocks = new HashMap<>();
+    private final Map<Block, UUID> reinforcedBlocks = new HashMap<>();
     private final boolean KEYPAD_ENABLED;
     private final List<Material> allowedContainers = new ArrayList<>();
 
