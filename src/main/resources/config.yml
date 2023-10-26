@@ -25,3 +25,7 @@ codebreaker:
 lockpick:
   enabled: true
   break-chance: 70
+
+reinforced-blocks:
+  enabled: true
+  disabled-blocks: []

@@ -14,6 +14,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
@@ -21,13 +23,17 @@ import java.util.*;
 public class BlockManager {
 
     private static final NamespacedKey LOCKED_BLOCK = new NamespacedKey(SpyGotSecurity.getInstance(),"locked-block");
+    public static final NamespacedKey REINFORCED = new NamespacedKey(SpyGotSecurity.getInstance(),"reinforced");
+
+    private final Map<Block, LockedBlock> lockedBlocks = new HashMap<>();
+    private final Map<Block, UUID> reinforcedBlocks = new HashMap<>();
 
     @Accessors(fluent = true)
     private final boolean usePasswords;
-    private final Map<Block, LockedBlock> lockedBlocks = new HashMap<>();
-    private final Map<Block, UUID> reinforcedBlocks = new HashMap<>();
     private final boolean KEYPAD_ENABLED;
     private final List<Material> allowedContainers = new ArrayList<>();
+    private final boolean REINFORCED_BLOCKS_ENABLED;
+    private final List<Material> disabledReinforcedBlocks = new ArrayList<>();
 
     public BlockManager(YamlDocument config) {
         usePasswords = config.getString("locked-blocks.method","PASSCODE").equalsIgnoreCase("password");
@@ -37,6 +43,12 @@ public class BlockManager {
         allowContainer(config,"barrel",Material.BARREL);
         allowContainer(config,"hopper",Material.HOPPER);
         allowContainer(config,"furnaces",Material.FURNACE,Material.SMOKER,Material.BLAST_FURNACE);
+
+        REINFORCED_BLOCKS_ENABLED = config.getBoolean("reinforced-blocks.enabled",true);
+        config.getStringList("reinforced-blocks.disabled-blocks").forEach(mat->{
+            Material material = Material.getMaterial(mat);
+            if (material != null) disabledReinforcedBlocks.add(material);
+        });
     }
 
     private void allowContainer(YamlDocument config, String name, Material... materials) {
@@ -58,6 +70,15 @@ public class BlockManager {
             //case "keycard-scanner" -> null;
             default -> null;
         };
+    }
+
+    public boolean canReinforce(Material material) {
+        return material.isBlock() && !material.isInteractable() && !disabledReinforcedBlocks.contains(material);
+    }
+    public boolean isReinforcedBlockItem(ItemStack item) {
+        if (item == null) return false;
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && Boolean.TRUE.equals(meta.getPersistentDataContainer().get(BlockManager.REINFORCED, PersistentDataType.BOOLEAN));
     }
 
     public ItemStack getItem(SGSBlock block) {

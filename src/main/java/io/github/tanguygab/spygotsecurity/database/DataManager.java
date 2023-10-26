@@ -1,6 +1,8 @@
 package io.github.tanguygab.spygotsecurity.database;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.route.Route;
 import dev.dejvokep.boostedyaml.serialization.standard.StandardSerializer;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
@@ -16,14 +18,14 @@ import org.bukkit.Location;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DataManager {
 
     private final SpyGotSecurity plugin;
     private final YamlDocument modules;
     private final YamlDocument lockedBlocks;
+    private final YamlDocument reinforcedBlocks;
     @Getter private final static StandardSerializer serializer = StandardSerializer.getDefault();
 
     static {
@@ -46,15 +48,28 @@ public class DataManager {
             lockedBlocks = YamlDocument.create(new File(plugin.getDataFolder(),"locked-blocks.yml"));
             List<LockedBlock> lockedBlocks = (List<LockedBlock>) this.lockedBlocks.getList("locked-blocks");
             lockedBlocks.forEach(locked->plugin.getBlockManager().addLockedBlock(locked));
+
+            reinforcedBlocks = YamlDocument.create(new File(plugin.getDataFolder(),"reinforced-blocks.yml"));
+            Section reinforcedBlocks = this.reinforcedBlocks.getSection("reinforced-blocks");
+            if (reinforcedBlocks != null)
+                reinforcedBlocks.getKeys().forEach(owner->{
+                    List<Location> locations = (List<Location>) reinforcedBlocks.getList(Route.from(owner));
+                    locations.forEach(loc->plugin.getBlockManager().getReinforcedBlocks().put(loc.getBlock(), UUID.fromString((String) owner)));
+                });
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void unload() {
+        Map<UUID,List<Location>> blocks = new HashMap<>();
+        plugin.getBlockManager().getReinforcedBlocks().forEach((block,owner)->blocks.computeIfAbsent(owner,k->new ArrayList<>()).add(block.getLocation()));
+        reinforcedBlocks.set("reinforced-blocks",blocks);
         lockedBlocks.set("locked-blocks",new ArrayList<>(plugin.getBlockManager().getLockedBlocks().values()));
         modules.set("modules",new ArrayList<>(plugin.getItemManager().getModules().values()));
         try {
+            reinforcedBlocks.save();
             lockedBlocks.save();
             modules.save();
         } catch (IOException e) {

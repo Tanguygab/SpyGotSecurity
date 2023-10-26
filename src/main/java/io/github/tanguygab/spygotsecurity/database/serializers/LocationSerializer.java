@@ -12,12 +12,12 @@ import java.util.Objects;
 public class LocationSerializer implements TypeAdapter<Location> {
     @NotNull
     @Override
-    public Map<Object, Object> serialize(@NotNull Location locked) {
+    public Map<Object, Object> serialize(@NotNull Location location) {
         Map<Object,Object> map = new HashMap<>();
-        map.put("x",locked.getBlockX());
-        map.put("y",locked.getBlockY());
-        map.put("z",locked.getBlockZ());
-        map.put("world", Objects.requireNonNull(locked.getWorld()).getName());
+        map.put("x",location.getBlockX());
+        map.put("y",location.getBlockY());
+        map.put("z",location.getBlockZ());
+        map.put("world", Objects.requireNonNull(location.getWorld()).getName());
         return map;
     }
 

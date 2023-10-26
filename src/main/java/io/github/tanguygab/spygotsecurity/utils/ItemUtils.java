@@ -1,9 +1,13 @@
 package io.github.tanguygab.spygotsecurity.utils;
 
+import io.github.tanguygab.spygotsecurity.managers.BlockManager;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public class ItemUtils {
@@ -30,5 +34,33 @@ public class ItemUtils {
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) return null;
         return meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+    }
+
+    public static void drop(ItemStack item, Block block) {
+        Location location = block.getLocation();
+        if (location.getWorld() != null)
+            location.getWorld().dropItemNaturally(location,item);
+    }
+
+    public static ItemStack getReinforcedCopy(ItemStack item, boolean reinforce) {
+        if (item == null || item.getType().isAir()) return null;
+        ItemStack copy = item.clone();
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return null;
+        meta.setDisplayName(reinforce ? Utils.color("&8&lReinforced " + getName(item)) : null);
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        if (reinforce) pdc.set(BlockManager.REINFORCED, PersistentDataType.BOOLEAN,true);
+        else pdc.remove(BlockManager.REINFORCED);
+        copy.setItemMeta(meta);
+        return copy;
+    }
+
+    private static String getName(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName()) return meta.getDisplayName();
+        StringBuilder name = new StringBuilder();
+        for (String part : item.getType().toString().split("_"))
+            name.append(" ").append(part.charAt(0)).append(part.substring(1).toLowerCase());
+        return name.deleteCharAt(0).toString();
     }
 }

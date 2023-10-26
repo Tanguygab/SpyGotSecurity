@@ -18,9 +18,9 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInvClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player p) || !openedMenus.containsKey(p)) return;
-        e.setCancelled(true);
-        if (e.getClick() == ClickType.DOUBLE_CLICK) return;
-        openedMenus.get(p).onClick(e.getCurrentItem(),e.getRawSlot(),e.getClick());
+        if (e.getClick() == ClickType.DOUBLE_CLICK ||
+                openedMenus.get(p).clickCancelled(e.getCurrentItem(),e.getRawSlot(),e.getClick()))
+            e.setCancelled(true);
     }
 
     @EventHandler
@@ -37,7 +37,8 @@ public class InventoryListener implements Listener {
     }
 
     public void close(Player player) {
-        openedMenus.remove(player);
+        SGSMenu menu = openedMenus.remove(player);
+        if (menu != null) menu.onClose();
         player.closeInventory();
     }
 

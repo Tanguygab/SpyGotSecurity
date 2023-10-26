@@ -27,7 +27,12 @@ public abstract class SGSMenu {
     public Inventory inv;
 
     public abstract void onOpen();
-    public abstract void onClick(ItemStack item, int slot, ClickType click);
+    protected void onClick(ItemStack item, int slot, ClickType click) {}
+    public void onClose() {}
+    public boolean clickCancelled(ItemStack item, int slot, ClickType click) {
+        onClick(item,slot,click);
+        return true;
+    }
 
     public void open() {
         plugin.getInventoryListener().open(player,this);

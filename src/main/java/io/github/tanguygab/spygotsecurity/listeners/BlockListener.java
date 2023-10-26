@@ -3,7 +3,9 @@ package io.github.tanguygab.spygotsecurity.listeners;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
 import io.github.tanguygab.spygotsecurity.managers.BlockManager;
+import io.github.tanguygab.spygotsecurity.utils.ItemUtils;
 import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
+import io.github.tanguygab.spygotsecurity.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,15 +14,14 @@ import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import java.util.Objects;
+import java.util.List;
 
 import static io.github.tanguygab.spygotsecurity.utils.Utils.*;
 
@@ -38,8 +39,12 @@ public class BlockListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
         Block block = e.getBlock();
+        if (bm.isReinforcedBlockItem(e.getItemInHand())) {
+            bm.getReinforcedBlocks().put(block,player.getUniqueId());
+            return;
+        }
         LockedBlock locked = bm.getBlockFromItem(block,player,e.getItemInHand());
-        plugin.getServer().getScheduler().runTaskLater(plugin,()-> {
+        plugin.getServer().getScheduler().runTaskLater(plugin,()-> { // runTaskLater because otherwise the DoubleChest instance isn't created
             if (locked == null) {
                 Block other = MultiBlockUtils.getSide(e.getBlock());
                 if (bm.getLockedBlocks().get(other) != null)
@@ -63,8 +68,13 @@ public class BlockListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
         Block block = e.getBlock();
-        if (!bm.getLockedBlocks().containsKey(block)) return;
         Player player = e.getPlayer();
+        if (bm.getReinforcedBlocks().containsKey(block) && (player.getGameMode() != GameMode.CREATIVE || !player.isSneaking())) {
+            Utils.actionbar(player,"&cThis block is reinforced! "+(player.getGameMode() == GameMode.CREATIVE ? "Shift-Click to break" : "Can't break"));
+            e.setCancelled(true);
+            return;
+        }
+        if (!bm.getLockedBlocks().containsKey(block)) return;
         LockedBlock locked = bm.getLockedBlocks().get(block);
         if (!locked.isOwner(player)) {
             e.setCancelled(true);
@@ -86,12 +96,12 @@ public class BlockListener implements Listener {
                     box.getInventory().addItem(item);
                     continue;
                 }
-                drop(item, block);
+                ItemUtils.drop(item, block);
             }
         }
         locked.getModules().values().forEach(module->{
             ItemStack item = plugin.getItemManager().getItemFromModule(module);
-            drop(item, block);
+            ItemUtils.drop(item, block);
         });
 
         send(player,"&cLocked Block deleted!");
@@ -101,11 +111,7 @@ public class BlockListener implements Listener {
             meta.setBlockState(box);
             drop.setItemMeta(meta);
         }
-        drop(drop,block);
-    }
-
-    private void drop(ItemStack item, Block block) {
-        Objects.requireNonNull(block.getLocation().getWorld()).dropItemNaturally(block.getLocation(),item);
+        ItemUtils.drop(drop, block);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -116,5 +122,30 @@ public class BlockListener implements Listener {
         LockedBlock locked = bm.getLockedBlocks().get(block);
         locked.onClick(e.getPlayer());
     }
+
+    @EventHandler
+    public void onBlockExploded(BlockExplodeEvent e) {
+        e.blockList().removeIf(this::isSGSBlock);
+    }
+    @EventHandler
+    public void onBlockExploded(EntityExplodeEvent e) {
+        e.blockList().removeIf(this::isSGSBlock);
+    }
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockMoved(BlockPistonExtendEvent e) {
+        if (pistonEvent(e.getBlocks())) e.setCancelled(true);
+    }
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockMoved(BlockPistonRetractEvent e) {
+        if (pistonEvent(e.getBlocks())) e.setCancelled(true);
+    }
+    private boolean pistonEvent(List<Block> blocks) {
+        return blocks.stream().anyMatch(this::isSGSBlock);
+    }
+    private boolean isSGSBlock(Block block) {
+        return bm.getReinforcedBlocks().containsKey(block) || bm.getLockedBlocks().containsKey(block);
+    }
+
+
 
 }
