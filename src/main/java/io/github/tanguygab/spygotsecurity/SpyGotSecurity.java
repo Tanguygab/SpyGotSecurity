@@ -54,6 +54,7 @@ public final class SpyGotSecurity extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
+        blockManager.unload();
         dataManager.unload();
     }
 

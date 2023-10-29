@@ -72,7 +72,7 @@ public abstract class LockedBlock extends ConfigurableBlock {
             return;
         }
 
-        if (plugin().getBlockManager().usePasswords()) {
+        if (plugin().getBlockManager().USE_PASSWORD) {
             if (password == null) {
                 byte[] salt = PasswordUtils.newSalt();
                 openAnvilGUI(player, "Set your password", salt, password -> onPasswordSet(player, password, salt));
@@ -88,11 +88,6 @@ public abstract class LockedBlock extends ConfigurableBlock {
         this.password = password;
         this.salt = salt;
         Utils.send(player,"New passcode set!");
-        plugin().getServer().getScheduler().runTask(plugin(),()->{
-            LockedBlock other = plugin().getBlockManager().getLockedBlocks().get(MultiBlockUtils.getSide(block));
-            if (MultiBlockUtils.isMultiBlock(this, other))
-                syncPasswordTo(other);
-        });
     }
     public void onPasswordCheck(Player player, byte[] password) {
         if (Arrays.equals(password,this.password)) {
@@ -115,11 +110,6 @@ public abstract class LockedBlock extends ConfigurableBlock {
                     return List.of(AnvilGUI.ResponseAction.close());
                 }))
                 .open(player);
-    }
-
-    public void syncPasswordTo(LockedBlock side) {
-        side.password = password;
-        side.salt = salt;
     }
 
 }

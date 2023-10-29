@@ -1,6 +1,7 @@
 package io.github.tanguygab.spygotsecurity.modules;
 
 import io.github.tanguygab.spygotsecurity.menus.SGSMenu;
+import io.github.tanguygab.spygotsecurity.menus.modules.DisguiseModuleMenu;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
@@ -18,12 +19,13 @@ public class DisguiseModule extends SGSModule {
     }
 
     public DisguiseModule(UUID uuid, Material material) {
-        super(uuid, ModuleType.HARMING);
+        super(uuid, ModuleType.DISGUISE);
         this.material = material;
     }
 
     @Override
     public SGSMenu getMenu(Player player) {
-        return null;
+        return new DisguiseModuleMenu(player,this);
     }
+
 }

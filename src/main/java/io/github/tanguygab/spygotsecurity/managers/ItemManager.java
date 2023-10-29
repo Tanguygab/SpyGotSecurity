@@ -45,6 +45,10 @@ public class ItemManager {
         modules.put(module.getUuid(),module);
     }
 
+    public boolean canDisguise(Material material) {
+        return material.isBlock() && !disabledDisguises.contains(material);
+    }
+
     public SGSModule getModuleFromItem(ItemStack item) {
         String type = ItemUtils.getTypeFromItem(MODULE,item);
         if (type == null) return null;

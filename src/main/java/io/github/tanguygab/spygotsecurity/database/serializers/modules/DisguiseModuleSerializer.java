@@ -16,7 +16,7 @@ public class DisguiseModuleSerializer implements TypeAdapter<DisguiseModule> {
     public Map<Object, Object> serialize(@NotNull DisguiseModule module) {
         Map<Object, Object> map = new HashMap<>();
         map.put("uuid",module.getUuid());
-        map.put("material",module.getMaterial() == null ? null : module.getMaterial());
+        map.put("material",module.getMaterial() == null ? null : module.getMaterial().toString());
         return map;
     }
 
@@ -25,6 +25,7 @@ public class DisguiseModuleSerializer implements TypeAdapter<DisguiseModule> {
     public DisguiseModule deserialize(@NotNull Map<Object, Object> map) {
         UUID uuid = (UUID) map.get("uuid");
         String mat = (String) map.get("material");
+        String data = (String) map.get("data");
         Material material = mat == null ? null : Material.getMaterial(mat);
         return new DisguiseModule(uuid,material);
     }

@@ -43,25 +43,18 @@ public class BlockListener implements Listener {
             bm.getReinforcedBlocks().put(block,player.getUniqueId());
             return;
         }
+
         LockedBlock locked = bm.getBlockFromItem(block,player,e.getItemInHand());
         plugin.getServer().getScheduler().runTaskLater(plugin,()-> { // runTaskLater because otherwise the DoubleChest instance isn't created
+            Block side = MultiBlockUtils.getSide(e.getBlock());
             if (locked == null) {
-                Block other = MultiBlockUtils.getSide(e.getBlock());
-                if (bm.getLockedBlocks().get(other) != null)
-                    MultiBlockUtils.setSingle(other,block);
+                if (bm.getLockedBlocks().get(side) != null)
+                    MultiBlockUtils.setSingle(side, block);
                 return;
             }
-            Block other = MultiBlockUtils.getSide(block);
-            LockedBlock lockedOther = bm.getLockedBlocks().get(other);
-            if (!MultiBlockUtils.isMultiBlock(locked,lockedOther)) {
-                MultiBlockUtils.setSingle(block,other);
-                bm.addLockedBlock(locked);
-                send(player, "&aLocked Block placed! Right-Click to add a password");
-                return;
-            }
-            lockedOther.syncPasswordTo(locked);
+            if (side != null) MultiBlockUtils.setSingle(block, side);
             bm.addLockedBlock(locked);
-            send(player, "&aDouble Locked Chest placed! Password synchronized with its other half.");
+            send(player, "&aLocked Block placed! Right-Click to add a password");
         },1);
     }
 
@@ -145,7 +138,5 @@ public class BlockListener implements Listener {
     private boolean isSGSBlock(Block block) {
         return bm.getReinforcedBlocks().containsKey(block) || bm.getLockedBlocks().containsKey(block);
     }
-
-
 
 }

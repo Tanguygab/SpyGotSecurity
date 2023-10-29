@@ -49,7 +49,15 @@ public class ItemListener implements Listener {
         Block block = e.getClickedBlock();
         ItemStack item = e.getItem();
         String type = ItemUtils.getTypeFromItem(ItemManager.ITEM,item);
-        if (type == null) return;
+        if (type == null) {
+            if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+            SGSModule module = im.getModuleFromItem(item);
+            if (module != null && im.getAllowedModules().contains(module.getType())) {
+                e.setCancelled(true);
+                onModule(module, player, item, block);
+            }
+            return;
+        }
         e.setCancelled(true);
         Map<Block,UUID> blocks = bm.getReinforcedBlocks();
         switch (type) {
@@ -60,6 +68,10 @@ public class ItemListener implements Listener {
                 block.setType(Material.AIR);
             }
             case "reinforcer" -> {
+                if (!bm.REINFORCED_BLOCKS_ENABLED) {
+                    Utils.actionbar(player,"&cThis item is disabled!");
+                    return;
+                }
                 switch (e.getAction()) {
                     case RIGHT_CLICK_AIR -> new BlockReinforcerMenu(player).open();
                     case LEFT_CLICK_BLOCK -> {
@@ -74,12 +86,6 @@ public class ItemListener implements Listener {
                         Utils.actionbar(player,"&aBlock Reinforced!");
                     }
                 }
-            }
-            default -> {
-                if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-                SGSModule module = im.getModuleFromItem(item);
-                if (module != null && im.getAllowedModules().contains(module.getType()))
-                    onModule(module, player, item, block);
             }
         }
     }

@@ -2,13 +2,9 @@ package io.github.tanguygab.spygotsecurity.managers;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
-import io.github.tanguygab.spygotsecurity.blocks.KeyPad;
-import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
-import io.github.tanguygab.spygotsecurity.blocks.LockedContainer;
-import io.github.tanguygab.spygotsecurity.blocks.SGSBlock;
+import io.github.tanguygab.spygotsecurity.blocks.*;
 import io.github.tanguygab.spygotsecurity.utils.ItemUtils;
 import lombok.Getter;
-import lombok.experimental.Accessors;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -28,15 +24,14 @@ public class BlockManager {
     private final Map<Block, LockedBlock> lockedBlocks = new HashMap<>();
     private final Map<Block, UUID> reinforcedBlocks = new HashMap<>();
 
-    @Accessors(fluent = true)
-    private final boolean usePasswords;
-    private final boolean KEYPAD_ENABLED;
+    public final boolean USE_PASSWORD;
+    public final boolean KEYPAD_ENABLED;
     private final List<Material> allowedContainers = new ArrayList<>();
-    private final boolean REINFORCED_BLOCKS_ENABLED;
+    public final boolean REINFORCED_BLOCKS_ENABLED;
     private final List<Material> disabledReinforcedBlocks = new ArrayList<>();
 
     public BlockManager(YamlDocument config) {
-        usePasswords = config.getString("locked-blocks.method","PASSCODE").equalsIgnoreCase("password");
+        USE_PASSWORD = config.getString("locked-blocks.method","PASSCODE").equalsIgnoreCase("password");
         KEYPAD_ENABLED = config.getBoolean("locked-blocks.keypad",true);
         allowContainer(config,"chest",Material.CHEST);
         allowContainer(config,"shulker-box",Material.SHULKER_BOX);
@@ -51,6 +46,10 @@ public class BlockManager {
         });
     }
 
+    public void unload() {
+        lockedBlocks.values().forEach(ConfigurableBlock::resetBlock);
+    }
+
     private void allowContainer(YamlDocument config, String name, Material... materials) {
         if (config.getBoolean("locked-blocks.containers"+name,true))
             allowedContainers.addAll(List.of(materials));
@@ -58,6 +57,7 @@ public class BlockManager {
 
     public void addLockedBlock(LockedBlock block) {
         lockedBlocks.put(block.getBlock(),block);
+        block.setBlock();
     }
 
     public LockedBlock getBlockFromItem(Block block, Player player, ItemStack item) {
@@ -90,13 +90,13 @@ public class BlockManager {
     public ItemStack getItemFromType(String type) {
         return switch (type) {
             case "keypad" -> KEYPAD_ENABLED ? getItem(Material.IRON_BLOCK,"&8&lKeypad","keypad") : null;
-            case "chest" -> getItem(Material.CHEST,"&6&lChest","container");
-            case "shulker_box" -> getItem(Material.SHULKER_BOX,"&d&lShulker Box","container");
-            case "barrel" -> getItem(Material.BARREL,"&6&lBarrel","container");
-            case "hopper" -> getItem(Material.HOPPER,"&7&lHopper","container");
-            case "furnace" -> getItem(Material.FURNACE,"&7&lFurnace","container");
-            case "blast_furnace" -> getItem(Material.BLAST_FURNACE,"&8&lBlast Furnace","container");
-            case "smoker" -> getItem(Material.SMOKER,"&6&lSmoker","container");
+            case "chest" -> getItem(Material.CHEST,"&6&lLocked Chest","container");
+            case "shulker_box" -> getItem(Material.SHULKER_BOX,"&d&lLocked Shulker Box","container");
+            case "barrel" -> getItem(Material.BARREL,"&6&lLocked Barrel","container");
+            case "hopper" -> getItem(Material.HOPPER,"&7&lLocked Hopper","container");
+            case "furnace" -> getItem(Material.FURNACE,"&7&lLocked Furnace","container");
+            case "blast_furnace" -> getItem(Material.BLAST_FURNACE,"&8&lLocked Blast Furnace","container");
+            case "smoker" -> getItem(Material.SMOKER,"&6&lLocked Smoker","container");
             default -> null;
         };
     }

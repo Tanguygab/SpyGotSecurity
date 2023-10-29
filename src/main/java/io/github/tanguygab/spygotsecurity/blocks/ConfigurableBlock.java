@@ -8,6 +8,8 @@ import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,6 +19,7 @@ import java.util.*;
 public abstract class ConfigurableBlock extends SGSBlock {
 
     private final Material originalBlock = block.getType();
+    private final BlockFace originalFace = block.getBlockData() instanceof Directional directional ? directional.getFacing() : null;
     private final Map<ModuleType,SGSModule> modules = new HashMap<>();
 
     public ConfigurableBlock(Block block, UUID owner, List<SGSModule> modules) {
@@ -35,7 +38,7 @@ public abstract class ConfigurableBlock extends SGSBlock {
     public void removeModule(Player player, SGSModule module) {
         ItemStack item = plugin().getItemManager().getItemFromModule(module);
         if (modules.get(module.getType()) == module) modules.remove(module.getType());
-        resetBlock();
+        setBlock();
         if (player.getInventory().addItem(item).isEmpty()) return;
         Objects.requireNonNull(player.getLocation().getWorld()).dropItem(player.getLocation(),item);
     }
@@ -59,13 +62,25 @@ public abstract class ConfigurableBlock extends SGSBlock {
         return SpyGotSecurity.getInstance();
     }
 
-    public void disguiseBlock() {
+    private void setFacing() {
+        if (originalFace != null && block.getBlockData() instanceof Directional directional) {
+            directional.setFacing(originalFace);
+            block.setBlockData(directional);
+        }
+    }
+    private void disguiseBlock() {
         if (!modules.containsKey(ModuleType.DISGUISE)) return;
         DisguiseModule module = (DisguiseModule) modules.get(ModuleType.DISGUISE);
-        if (module.getType() != null) block.setType(module.getMaterial());
+        if (module.getMaterial() == null || module.getMaterial().isAir()) return;
+        block.setType(module.getMaterial());
+        setFacing();
     }
     public void resetBlock() {
-        if (modules.containsKey(ModuleType.DISGUISE))
-            block.setType(originalBlock);
+        block.setType(originalBlock);
+        setFacing();
+    }
+    public void setBlock() {
+        if (modules.containsKey(ModuleType.DISGUISE)) disguiseBlock();
+        else resetBlock();
     }
 }
