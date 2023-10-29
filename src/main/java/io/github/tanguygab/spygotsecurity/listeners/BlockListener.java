@@ -74,6 +74,7 @@ public class BlockListener implements Listener {
             send(player,"&cYou are not the owner of this block!");
             return;
         }
+        locked.resetBlock();
         plugin.getBlockManager().getLockedBlocks().remove(block);
         ItemStack drop = bm.getItem(locked);
         if (drop == null) return; // Block was changed while plugin was unloaded
