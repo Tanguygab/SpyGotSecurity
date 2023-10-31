@@ -15,7 +15,9 @@ public class KeyPadSerializer extends LockedBlockSerializer implements TypeAdapt
     @NotNull
     @Override
     public Map<Object, Object> serialize(@NotNull KeyPad keypad) {
-        return super.serialize(keypad);
+        Map<Object, Object> map = super.serialize(keypad);
+        map.put("tick-delay",keypad.getTickDelay());
+        return map;
     }
 
     @NotNull
@@ -26,7 +28,8 @@ public class KeyPadSerializer extends LockedBlockSerializer implements TypeAdapt
         List<SGSModule> modules = getModules(map);
         byte[] password = getPassword(map,false);
         byte[] salt = getPassword(map,true);
-        return new KeyPad(loc.getBlock(),uuid,modules,password,salt);
+        int tickDelay = (int) map.getOrDefault("tick-delay",20);
+        return new KeyPad(loc.getBlock(),uuid,modules,password,salt,tickDelay);
     }
 
 }

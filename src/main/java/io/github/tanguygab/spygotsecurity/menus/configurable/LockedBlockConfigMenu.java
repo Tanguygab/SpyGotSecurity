@@ -13,14 +13,10 @@ public class LockedBlockConfigMenu extends ConfigurableBlockMenu<LockedBlock> {
     }
 
     @Override
-    public void onMenuOpen() {
-
-    }
+    public void onMenuOpen() {}
 
     @Override
-    public void onItemClick(ItemStack item, int slot, ClickType click) {
-
-    }
+    public void onItemClick(ItemStack item, int slot, ClickType click) {}
 
 
 }

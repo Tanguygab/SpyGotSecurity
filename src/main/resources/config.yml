@@ -1,6 +1,8 @@
 locked-blocks:
   method: PASSCODE # PASSCODE or PASSWORD
-  keypad: true
+  keypad:
+    enabled: true
+    default-tick-delay: 20
   containers:
     chest: true
     shulker-box: true
