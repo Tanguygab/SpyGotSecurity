@@ -1,12 +1,12 @@
 package io.github.tanguygab.spygotsecurity.blocks;
 
 import io.github.tanguygab.spygotsecurity.managers.ItemManager;
+import io.github.tanguygab.spygotsecurity.menus.LockPickMenu;
 import io.github.tanguygab.spygotsecurity.menus.configurable.LockedBlockConfigMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.CheckPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.menus.locked.SetPasscodeMenu;
 import io.github.tanguygab.spygotsecurity.modules.SGSModule;
 import io.github.tanguygab.spygotsecurity.utils.ItemUtils;
-import io.github.tanguygab.spygotsecurity.utils.MultiBlockUtils;
 import io.github.tanguygab.spygotsecurity.utils.PasswordUtils;
 import io.github.tanguygab.spygotsecurity.utils.Utils;
 import lombok.Getter;
@@ -36,19 +36,28 @@ public abstract class LockedBlock extends ConfigurableBlock {
     }
 
     public abstract void onSuccess(Player player);
+    public void openConfigMenu(Player player) {
+        new LockedBlockConfigMenu(player,this).open();
+    }
 
     public void onClick(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();
         String itemType = ItemUtils.getTypeFromItem(ItemManager.ITEM,item);
-        if ("codebreaker".equals(itemType)) {
-            ItemManager im = plugin().getItemManager();
-            int uses = im.getCodeBreakerUses(item);
-            if (uses != -1 && player.getGameMode() != GameMode.CREATIVE) {
-                if (--uses < 1) player.getInventory().remove(item);
-                else im.setCodebreakerUses(item, uses);
+        if (itemType != null && password != null) switch (itemType) {
+            case "codebreaker" -> {
+                ItemManager im = plugin().getItemManager();
+                int uses = im.getCodeBreakerUses(item);
+                if (uses != -1 && player.getGameMode() != GameMode.CREATIVE) {
+                    if (--uses < 1) player.getInventory().remove(item);
+                    else im.setCodebreakerUses(item, uses);
+                }
+                if (player.getGameMode() == GameMode.CREATIVE || Utils.RANDOM.nextDouble() < im.CODEBREAKER_CHANCE) {
+                    onSuccess(player);
+                    return;
+                }
             }
-            if (player.getGameMode() == GameMode.CREATIVE || Utils.RANDOM.nextDouble() < im.CODEBREAKER_CHANCE) {
-                onSuccess(player);
+            case "lockpick" -> {
+                new LockPickMenu(player,this).open();
                 return;
             }
         }
@@ -62,7 +71,7 @@ public abstract class LockedBlock extends ConfigurableBlock {
                 return;
             }
         } else if (player.isSneaking()) {
-            new LockedBlockConfigMenu(player,this).open();
+            openConfigMenu(player);
             return;
         }
 

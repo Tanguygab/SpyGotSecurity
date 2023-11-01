@@ -19,6 +19,10 @@ modules:
   disguise:
     enabled: true
     disabled-blocks: []
+  more-pins:
+    - 3
+    - 5
+    - 7
 
 codebreaker:
   enabled: true
@@ -26,7 +30,8 @@ codebreaker:
 
 lockpick:
   enabled: true
-  break-chance: 70
+  default-pins: 1
+  break-chance: 0.7
 
 reinforced-blocks:
   enabled: true

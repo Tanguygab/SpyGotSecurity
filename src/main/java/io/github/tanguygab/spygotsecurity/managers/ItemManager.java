@@ -21,7 +21,14 @@ public class ItemManager {
     @Getter private final List<ModuleType> allowedModules = new ArrayList<>();
     @Getter private final List<Material> disabledDisguises = new ArrayList<>();
     public final double HARMING_DAMAGE;
+
+    public final boolean CODEBREAKER_ENABLED;
     public final double CODEBREAKER_CHANCE;
+
+    private final List<Integer> morePinsModuleLevels;
+    public final boolean LOCKPICK_ENABLED;
+    public final int LOCKPICK_DEFAULT_PINS;
+    public final double LOCKPICK_BREAK_CHANCE;
 
     public ItemManager(YamlDocument config) {
         for (ModuleType type : ModuleType.values())
@@ -29,7 +36,8 @@ public class ItemManager {
                 allowedModules.add(type);
 
         HARMING_DAMAGE = config.getDouble("modules.harming.damage",2.);
-        CODEBREAKER_CHANCE = config.getDouble("modules.codebreaker.success-chance",0.33);
+        CODEBREAKER_ENABLED = config.getBoolean("codebreaker.enabled",true);
+        CODEBREAKER_CHANCE = config.getDouble("codebreaker.success-chance",0.33);
 
         if (config.contains("modules.disguise.disabled-blocks"))
             config.getStringList("modules.disguise.disabled-blocks").forEach(block->{
@@ -39,6 +47,11 @@ public class ItemManager {
 
         if (config.getBoolean("modules.whitelist",true))
             allowedModules.add(ModuleType.WHITELIST);
+
+        morePinsModuleLevels = config.getIntList("modules.more-pins", List.of(3,5,7));
+        LOCKPICK_ENABLED = config.getBoolean("lockpick.enabled",true);
+        LOCKPICK_DEFAULT_PINS = validPins(config.getInt("lockpick.default-pins",1));
+        LOCKPICK_BREAK_CHANCE = config.getDouble("lockpick.break-chance",.7);
     }
 
     public void addModule(SGSModule module) {
@@ -90,10 +103,11 @@ public class ItemManager {
     public ItemStack getItemFromModuleType(ModuleType type) {
         if (type == null) return null;
         return switch (type) {
-            case WHITELIST -> getItem(Material.PAPER,"&a&lWhiteList","m:whitelist","","&8Right-Click to add players");
-            case BLACKLIST -> getItem(Material.PAPER,"&a&lBlackList","m:blacklist","","&8Right-Click to add players");
-            case DISGUISE -> getItem(Material.PAINTING,"&6&lDisguise Module","m:disguise","","&8Right-Click to set a disguise");
-            case HARMING -> getItem(Material.ITEM_FRAME,"&6&lHarming Module","m:harming");
+            case WHITELIST -> getItem(type.getMaterial(),"&a&lWhiteList","m:whitelist","","&8Right-Click to add players");
+            case BLACKLIST -> getItem(type.getMaterial(),"&a&lBlackList","m:blacklist","","&8Right-Click to add players");
+            case DISGUISE -> getItem(type.getMaterial(),"&6&lDisguise Module","m:disguise","","&8Right-Click to set a disguise");
+            case HARMING -> getItem(type.getMaterial(),"&6&lHarming Module","m:harming");
+            case MORE_PINS -> getItem(type.getMaterial(),"&8&lMore Pins Module","m:more_pins","","&7Level: &f1");
         };
     }
 
@@ -121,4 +135,12 @@ public class ItemManager {
         item.setItemMeta(ItemUtils.setData(item.getItemMeta(),CODEBREAKER,uses+""));
     }
 
+    public int getMorePins(SGSModule module) {
+        if (module == null || module.getType() != ModuleType.MORE_PINS) return 0;
+        return validPins(morePinsModuleLevels.get(((MorePinsModule)module).getLevel()));
+    }
+
+    public int validPins(int pin) {
+        return Math.min(7,Math.max(pin, 1));
+    }
 }

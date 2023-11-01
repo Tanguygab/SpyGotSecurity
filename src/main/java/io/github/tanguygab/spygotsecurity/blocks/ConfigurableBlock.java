@@ -1,6 +1,7 @@
 package io.github.tanguygab.spygotsecurity.blocks;
 
 import io.github.tanguygab.spygotsecurity.SpyGotSecurity;
+import io.github.tanguygab.spygotsecurity.managers.ItemManager;
 import io.github.tanguygab.spygotsecurity.modules.DisguiseModule;
 import io.github.tanguygab.spygotsecurity.modules.ListModule;
 import io.github.tanguygab.spygotsecurity.modules.ModuleType;
@@ -43,17 +44,15 @@ public abstract class ConfigurableBlock extends SGSBlock {
         Objects.requireNonNull(player.getLocation().getWorld()).dropItem(player.getLocation(),item);
     }
 
-    public boolean isBlacklisted(Player player) {
-        if (!modules.containsKey(ModuleType.BLACKLIST)) return false;
-        return ((ListModule)modules.get(ModuleType.BLACKLIST)).contains(player);
+    protected boolean isBlacklisted(Player player) {
+        return modules.containsKey(ModuleType.BLACKLIST) && ((ListModule)modules.get(ModuleType.BLACKLIST)).contains(player);
     }
 
-    public boolean isWhitelisted(Player player) {
-        if (!modules.containsKey(ModuleType.WHITELIST)) return false;
-        return ((ListModule)modules.get(ModuleType.WHITELIST)).contains(player);
+    protected boolean isWhitelisted(Player player) {
+        return modules.containsKey(ModuleType.WHITELIST) && ((ListModule)modules.get(ModuleType.WHITELIST)).contains(player);
     }
 
-    public void harmPlayer(Player player) {
+    protected void harmPlayer(Player player) {
         if (modules.containsKey(ModuleType.HARMING))
             plugin().getServer().getScheduler().runTask(plugin(),()->player.damage(plugin().getItemManager().HARMING_DAMAGE));
     }
@@ -83,4 +82,11 @@ public abstract class ConfigurableBlock extends SGSBlock {
         if (modules.containsKey(ModuleType.DISGUISE)) disguiseBlock();
         else resetBlock();
     }
+
+    public int getPins() {
+        ItemManager im = plugin().getItemManager();
+        int pins = im.LOCKPICK_DEFAULT_PINS + im.getMorePins(modules.get(ModuleType.MORE_PINS));
+        return im.validPins(pins);
+    }
+
 }

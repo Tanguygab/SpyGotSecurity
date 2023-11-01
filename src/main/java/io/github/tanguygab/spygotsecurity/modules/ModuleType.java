@@ -12,7 +12,8 @@ public enum ModuleType {
     WHITELIST("Whitelist",Material.PAPER),
     BLACKLIST("Blacklist",Material.PAPER),
     DISGUISE("Disguise",Material.PAINTING),
-    HARMING("Harming",Material.ITEM_FRAME);
+    HARMING("Harming",Material.ITEM_FRAME),
+    MORE_PINS("More Pins", Material.IRON_BARS);
 
     private final String name;
     private final Material material;

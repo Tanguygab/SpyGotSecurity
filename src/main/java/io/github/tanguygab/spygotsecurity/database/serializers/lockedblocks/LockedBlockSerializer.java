@@ -31,7 +31,7 @@ public abstract class LockedBlockSerializer {
         List<SGSModule> modules = new ArrayList<>();
         @SuppressWarnings("unchecked")
         List<UUID> uuids = (List<UUID>) map.get("modules");
-        uuids.forEach(uuid -> modules.add(SpyGotSecurity.getInstance().getItemManager().getModules().get(uuid)));
+        if (uuids != null) uuids.forEach(uuid -> modules.add(SpyGotSecurity.getInstance().getItemManager().getModules().get(uuid)));
         return modules;
     }
 

@@ -26,7 +26,7 @@ public abstract class PasscodeMenu extends SGSMenu {
     public void onOpen() {
         inv.setItem(42,getItem(Material.LIME_WOOL,"Confirm"));
         updateNametag();
-        inv.setItem(15,getHead("a185c97dbb8353de652698d24b64327b793a3f32a98be67b719fbedab35e","Backspace"));
+        inv.setItem(15,getHead("Backspace","a185c97dbb8353de652698d24b64327b793a3f32a98be67b719fbedab35e"));
 
         setCodeItem(38,0);
         setCodeItem(28,1);
@@ -76,7 +76,7 @@ public abstract class PasscodeMenu extends SGSMenu {
     protected abstract void onClick(byte[] password, byte[] salt);
 
     private void setCodeItem(int slot, int num) {
-        ItemStack item = getHead(getTexture(num),String.valueOf(num));
+        ItemStack item = getHead(String.valueOf(num),getTexture(num));
         inv.setItem(slot,item);
         numbers.put(slot,num);
     }

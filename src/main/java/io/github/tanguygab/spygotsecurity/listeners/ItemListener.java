@@ -58,16 +58,17 @@ public class ItemListener implements Listener {
             }
             return;
         }
-        e.setCancelled(true);
         Map<Block,UUID> blocks = bm.getReinforcedBlocks();
         switch (type) {
             case "lockpick","codebreaker" -> {}
             case "remover" -> {
+                e.setCancelled(true);
                 if (block == null || !player.getUniqueId().equals(blocks.get(block))) return;
                 ItemUtils.drop(ItemUtils.getReinforcedCopy(new ItemStack(block.getType()),true),block);
                 block.setType(Material.AIR);
             }
             case "reinforcer" -> {
+                e.setCancelled(true);
                 if (!bm.REINFORCED_BLOCKS_ENABLED) {
                     Utils.actionbar(player,"&cThis item is disabled!");
                     return;

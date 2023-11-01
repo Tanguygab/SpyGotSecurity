@@ -42,7 +42,7 @@ public abstract class SGSMenu {
     }
 
     public void fillMenu() {
-        ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
+        ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE);
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
             if (item == null || item.getType().isAir())
@@ -60,7 +60,7 @@ public abstract class SGSMenu {
     }
 
     public void fillSlots(int... slots) {
-        ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE, " ");
+        ItemStack filler = getItem(Material.GRAY_STAINED_GLASS_PANE);
         for (Integer slot : slots) inv.setItem(slot,filler);
     }
 
@@ -74,7 +74,10 @@ public abstract class SGSMenu {
     protected ItemStack getItem(Material mat, String name) {
         return getItem(new ItemStack(mat),name);
     }
-    protected ItemStack getHead(String texture, String name) {
+    protected ItemStack getItem(Material mat) {
+        return getItem(mat,"");
+    }
+    protected ItemStack getHead(String name, String texture) {
         ItemStack item = getItem(Material.PLAYER_HEAD, "&f"+name);
         if (item.getItemMeta() instanceof SkullMeta skull) {
             skull.setOwnerProfile(getProfile(texture));
@@ -85,9 +88,8 @@ public abstract class SGSMenu {
     private PlayerProfile getProfile(String texture) {
         if (profiles.containsKey(texture)) return profiles.get(texture);
         PlayerProfile profile = plugin.getServer().createPlayerProfile(UUID.randomUUID());
-        try {
-            profile.getTextures().setSkin(new URL("http://textures.minecraft.net/texture/"+texture));
-        } catch (Exception ignored) {}
+        try {profile.getTextures().setSkin(new URL("http://textures.minecraft.net/texture/"+texture));}
+        catch (Exception ignored) {}
         profiles.put(texture,profile);
         return profile;
     }
