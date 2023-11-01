@@ -1,6 +1,8 @@
 package io.github.tanguygab.spygotsecurity.menus;
 
 import io.github.tanguygab.spygotsecurity.blocks.LockedBlock;
+import io.github.tanguygab.spygotsecurity.utils.Utils;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -80,7 +82,11 @@ public class LockPickMenu extends SGSMenu {
         if (above == null || above.getType() != Material.DARK_OAK_FENCE_GATE) return;
 
         if (pins.get(0) != pos-1) {
-            onOpen();
+            if (player.getGameMode() != GameMode.CREATIVE && Utils.RANDOM.nextDouble() < plugin.getItemManager().LOCKPICK_BREAK_CHANCE) {
+                player.getInventory().setItemInMainHand(null);
+                player.closeInventory();
+                Utils.send(player,"&cYour Lockpick broke!");
+            } else onOpen();
             return;
         }
         pins.remove(0);
